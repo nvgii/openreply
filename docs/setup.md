@@ -42,6 +42,8 @@ Recommended split:
 - Web app: Vercel. You get `your-app.vercel.app` for free on deploy.
 - Worker, Postgres, Redis: Railway.
 
+To run the web app on Railway as well (one project: web, worker, a daily cron, Postgres, and Redis, direct Meta, no Zernio), follow [railway-setup-de.md](railway-setup-de.md). That guide is in German and walks through the dashboard click by click. Railway config for that layout lives in `.railway/railway.ts`.
+
 Do Railway first, because Vercel needs the database URLs from it.
 
 ### Step 1: Railway (Postgres, Redis, worker)
