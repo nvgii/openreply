@@ -1,0 +1,11 @@
+# Public HTTPS in front of the Next.js web container.
+# Caddy substitutes {$DOMAIN} and {$ACME_EMAIL} from the container environment
+# and obtains a Let's Encrypt certificate when the name points at this server.
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy web:3000
+}

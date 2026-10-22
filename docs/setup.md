@@ -42,7 +42,7 @@ Recommended split:
 - Web app: Vercel. You get `your-app.vercel.app` for free on deploy.
 - Worker, Postgres, Redis: Railway.
 
-To run the web app on Railway as well (one project: web, worker, a daily cron, Postgres, and Redis, direct Meta, no Zernio), follow [railway-setup-de.md](railway-setup-de.md). That guide is in German and walks through the dashboard click by click. Railway config for that layout lives in `.railway/railway.ts`.
+To run the web app on Railway as well (one project: web, worker, a daily cron, Postgres, and Redis, direct Meta, no Zernio), follow [railway-setup-de.md](railway-setup-de.md). That guide is in German and walks through the dashboard click by click. Railway config for that layout lives in `.railway/railway.ts`. As of 22 October 2026, Railway paused new signups after a security incident, so that path is not recommended. A single Hetzner server with Docker Compose is described in [hetzner-setup-de.md](hetzner-setup-de.md).
 
 Do Railway first, because Vercel needs the database URLs from it.
 

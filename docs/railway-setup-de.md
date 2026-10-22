@@ -1,5 +1,7 @@
 # OpenReply auf Railway einrichten
 
+> **Nicht verwenden (Stand 22. Oktober 2026).** Railway hat nach einem Sicherheitsvorfall am 21. Oktober 2026 neue Anmeldungen pausiert. Die aktuelle Anleitung für einen eigenen Server ist [hetzner-setup-de.md](hetzner-setup-de.md). Diese Datei bleibt nur als Referenz, falls Railway wieder offen ist.
+
 Diese Anleitung ist für eine Person, die OpenReply zum ersten Mal aufsetzt. Am Ende laufen Webseite, Hintergrunddienst, Datenbank und Redis in **einem** Railway-Projekt. Instagram wird über **deine eigene Meta-App** verbunden. Zernio brauchst du dafür nicht.
 
 Die Schritte folgen dem Code und den bestehenden Docs in diesem Repository (`docs/setup.md`, `package.json`, `lib/env.ts`, `lib/meta/oauth.ts`, `worker/dm-worker.ts`, `scripts/railway-cron.mjs`, `.railway/railway.ts`). Wo sich eine Schaltfläche in Railway oder bei Meta verschoben haben kann, steht **Unsicher:**.

@@ -1,0 +1,121 @@
+# OpenReply on one Hetzner Cloud server.
+# Postgres and Redis have no published ports. Caddy is the only public HTTP(S) entry.
+# Run from this directory: docker compose --env-file .env up -d --build
+
+name: openreply
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-openreply}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-openreply}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging: &jsonlog
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    # family=0 is for the app URL, not for this server. ioredis needs it on some networks.
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging: *jsonlog
+
+  web:
+    image: openreply:hetzner
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      PORT: "3000"
+    # Migrate only after Postgres is on the Docker network. The image build has no database.
+    command: ["sh", "-c", "npm run db:migrate && npm start -- --hostname 0.0.0.0 --port 3000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3000/api/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    logging: *jsonlog
+
+  worker:
+    image: openreply:hetzner
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    command: ["npm", "run", "worker"]
+    depends_on:
+      web:
+        condition: service_healthy
+    logging: *jsonlog
+
+  # scripts/cron.sh stays up, calls attach-next-reel every 5 minutes, and calls
+  # refresh-tokens plus snapshot-followers once a day at 05:00 UTC. The worker
+  # also attaches next reels; the daily calls are what keep the Instagram token alive.
+  cron:
+    image: openreply:hetzner
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      CRON_BASE_URL: http://web:3000
+    command: ["sh", "scripts/cron.sh"]
+    depends_on:
+      web:
+        condition: service_healthy
+    logging: *jsonlog
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    logging: *jsonlog
+
+volumes:
+  pgdata:
+  redisdata:
+  caddy_data:
+  caddy_config:
