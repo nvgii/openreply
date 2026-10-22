@@ -25,6 +25,12 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+# node:20-slim has no openssl. Without it, `prisma generate` bakes the
+# openssl-1.1.x schema engine, then `prisma migrate deploy` on the runner
+# (which has libssl3) tries to download the 3.0.x engine at every start.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openssl ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
 # `npm run build` = `prisma generate && next build` (see package.json) —
 # generates app/generated/prisma AND compiles .next/ in one step.
 RUN npm run build
@@ -36,7 +42,7 @@ ENV NODE_ENV=production
 # scripts/cron.sh calls the /api/cron routes with wget, which node:20-slim does
 # not include.
 RUN apt-get update \
- && apt-get install -y --no-install-recommends wget ca-certificates \
+ && apt-get install -y --no-install-recommends wget ca-certificates openssl \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/node_modules ./node_modules
