@@ -51,6 +51,7 @@ export async function processInstagramWebhook({ payload: incoming, provider, wor
           commenterName: event.commenterName,
           mediaId: event.mediaId,
           originalMediaId: event.originalMediaId,
+          commentCreatedAt: event.commentCreatedAt,
           source: "WEBHOOK",
         },
         {

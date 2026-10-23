@@ -53,6 +53,8 @@ services:
     environment:
       PORT: "3000"
     # Migrate only after Postgres is on the Docker network. The image build has no database.
+    # update.sh recreates this container so `npm run db:migrate` runs before the
+    # worker, which waits for this healthcheck, starts polling again.
     command: ["sh", "-c", "npm run db:migrate && npm start -- --hostname 0.0.0.0 --port 3000"]
     depends_on:
       postgres:

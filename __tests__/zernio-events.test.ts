@@ -19,7 +19,14 @@ describe('Zernio event boundary', () => {
     const payload = { ...envelope, event: 'comment.received', comment: { id: 'comment1', text: 'LINK', author: { id: 'person1', username: 'reader' }, platformPostId: 'media1' }, post: { id: 'internal1', platformPostId: 'media1' } };
     const result = normalizeZernioEvent({ payload, account });
     expect(parseCommentEvents(result!)).toEqual([{ instagramAccountId: 'ig1', commentId: 'comment1', commentText: 'LINK', commenterId: 'person1', commenterName: 'reader', mediaId: 'media1', originalMediaId: undefined }]);
+    expect(result!.entry[0].time).toBe(0);
     expect(normalizeZernioEvent({ payload, account: { ...account, zernioAccountId: 'other' } })).toBeNull();
+  });
+  it('keeps a comment creation time and does not invent one', () => {
+    const dated = normalizeZernioEvent({ account, payload: { ...envelope, event: 'comment.received', comment: { id: 'comment1', text: 'LINK', author: { id: 'person1', username: 'reader' }, platformPostId: 'media1', createdTime: '2026-10-01T00:00:00.000Z' } } });
+    expect(parseCommentEvents(dated!)[0].commentCreatedAt).toBe('2026-10-01T00:00:00.000Z');
+    const undated = normalizeZernioEvent({ account, payload: { ...envelope, event: 'comment.received', comment: { id: 'comment1', text: 'LINK', author: { id: 'person1' }, platformPostId: 'media1', createdTime: { bad: true } } } });
+    expect(parseCommentEvents(undated!)[0].commentCreatedAt).toBeUndefined();
   });
   it('excludes self comments and outgoing message echoes', () => {
     const comment = normalizeZernioEvent({ payload: { ...envelope, event: 'comment.received', comment: { id: 'c', platformPostId: 'p', text: 'LINK', author: { id: 'ig1' } } }, account });

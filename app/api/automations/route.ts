@@ -19,6 +19,7 @@ import {
   canManageWorkspace,
   getCurrentWorkspaceContext,
 } from "@/lib/workspace-access";
+import { activatedAtForUpdate } from "@/lib/automation/activation";
 
 // This list is read-your-writes (created/imported campaigns must show up
 // immediately), so never cache it at the route or CDN layer.
@@ -414,6 +415,9 @@ export async function POST(request: NextRequest) {
         ? publicReplyList[0] ?? parsed.data.publicReplyMessage ?? null
         : null,
       isActive: parsed.data.isActive,
+      // Creation is an activation. A campaign created paused gets a fresh
+      // timestamp again when it is later switched on.
+      activatedAt: new Date(),
       wholeWordMatch: parsed.data.wholeWordMatch,
       workspaceId,
       instagramAccountId: instagramAccount.id,
@@ -527,10 +531,15 @@ export async function PATCH(request: NextRequest) {
   // One transaction, so a save never lands half applied. Updating the campaign
   // first locks its row, which makes a second save of the same campaign wait
   // for this one before it reads the links.
+  const activatedAt = activatedAtForUpdate({
+    wasActive: existing.isActive,
+    willBeActive: automationData.isActive,
+  });
+
   const updated = await prisma.$transaction(async (tx) => {
     const campaign = await tx.automation.update({
       where: { id: automationId },
-      data: automationData,
+      data: activatedAt ? { ...automationData, activatedAt } : automationData,
     });
 
     await syncCampaignLinks(tx, {

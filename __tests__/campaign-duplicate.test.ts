@@ -45,6 +45,7 @@ const sourceCampaign = {
   publicReplyMessage: "Sent!",
   publicReplyMessages: ["Sent!", "Check your DMs"],
   isActive: true,
+  activatedAt: new Date("2026-05-01T00:00:00.000Z"),
   wholeWordMatch: true,
   reportShareSlug: "report_123",
   reportShareEnabled: false,
@@ -76,6 +77,7 @@ const NOT_COPIED = new Set([
   "id",
   "name",
   "isActive",
+  "activatedAt",
   "reportShareSlug",
   "createdAt",
   "updatedAt",
@@ -141,9 +143,13 @@ describe("duplicateCampaign", () => {
       isActive: false,
       name: "Product Link Drop copy",
     });
-    // The copy is a new row, so the id and timestamps are left to the database.
+    // The copy is a new row, so the id and row timestamps are left to the database.
     expect(createArgs().data.id).toBeUndefined();
     expect(createArgs().data.createdAt).toBeUndefined();
+    // Activation starts fresh. The copy is paused, so switching it on later
+    // replaces this again.
+    expect(createArgs().data.activatedAt).toBeInstanceOf(Date);
+    expect(createArgs().data.activatedAt).not.toEqual(sourceCampaign.activatedAt);
   });
 
   it("keeps the copied name within the 100 character limit", () => {

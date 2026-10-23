@@ -152,6 +152,7 @@ const mockAutomation = {
   keywords: ["LINK", "PRICE"],
   dmMessage: "Hey {username}! Here is the link: https://example.com",
   isActive: true,
+  activatedAt: new Date("2020-01-01T00:00:00.000Z"),
   wholeWordMatch: true,
   matchAnyPost: false,
   matchAnyWord: false,
@@ -318,6 +319,84 @@ describe("DM Worker — comments left on an ad", () => {
       })
     );
     expect(mockSendPrivateReply).toHaveBeenCalled();
+  });
+});
+
+describe("DM Worker — comments from before the campaign was active", () => {
+  const activatedAt = new Date("2026-10-20T12:00:00.000Z");
+
+  beforeEach(() => {
+    mockPrisma.automation.findMany.mockResolvedValue([
+      { ...mockAutomation, activatedAt },
+    ]);
+  });
+
+  it("does not DM a comment written before activation", async () => {
+    await getProcessor()(
+      createMockJob({
+        ...mockJobData,
+        commentCreatedAt: "2026-10-20T11:00:00.000Z",
+      })
+    );
+
+    expect(mockSendPrivateReply).not.toHaveBeenCalled();
+    expect(mockPrisma.dmLog.upsert).not.toHaveBeenCalled();
+    expect(mockReserveWorkspaceDMSend).not.toHaveBeenCalled();
+  });
+
+  it("DMs a comment written at or after activation", async () => {
+    await getProcessor()(
+      createMockJob({
+        ...mockJobData,
+        commentCreatedAt: activatedAt.toISOString(),
+      })
+    );
+
+    expect(mockSendPrivateReply).toHaveBeenCalled();
+  });
+
+  it("keeps handling a comment when no timestamp is known", async () => {
+    await getProcessor()(createMockJob());
+
+    expect(mockSendPrivateReply).toHaveBeenCalled();
+  });
+
+  it("keeps handling a comment whose timestamp cannot be parsed", async () => {
+    await getProcessor()(
+      createMockJob({ ...mockJobData, commentCreatedAt: "not-a-time" })
+    );
+
+    expect(mockSendPrivateReply).toHaveBeenCalled();
+  });
+
+  it("compares the timestamp against each campaign on its own", async () => {
+    mockPrisma.automation.findMany.mockResolvedValue([
+      {
+        ...mockAutomation,
+        id: "later-campaign",
+        activatedAt: new Date("2026-10-22T00:00:00.000Z"),
+      },
+      { ...mockAutomation, id: "earlier-campaign", activatedAt },
+    ]);
+
+    await getProcessor()(
+      createMockJob({
+        ...mockJobData,
+        commentCreatedAt: "2026-10-21T00:00:00.000Z",
+      })
+    );
+
+    expect(mockSendPrivateReply).toHaveBeenCalledTimes(1);
+    expect(mockPrisma.dmLog.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          automationId_commentId: {
+            automationId: "earlier-campaign",
+            commentId: "comment_555",
+          },
+        },
+      })
+    );
   });
 });
 
@@ -1020,6 +1099,20 @@ describe("DM Worker — DM keyword trigger", () => {
     mockPrisma.automation.findMany.mockResolvedValue([dmTriggerAutomation]);
   });
 
+  it("still replies to a keyword DM when the comment cutoff would block an old comment", async () => {
+    mockPrisma.automation.findMany.mockResolvedValue([
+      {
+        ...dmTriggerAutomation,
+        activatedAt: new Date("2099-01-01T00:00:00.000Z"),
+      },
+    ]);
+
+    await getProcessor()(createMockMessageJob());
+
+    expect(mockSendDirectMessage).toHaveBeenCalled();
+    expect(mockSendPrivateReply).not.toHaveBeenCalled();
+  });
+
   it("should reply to a DM whose text matches the campaign keywords", async () => {
     const processor = getProcessor();
     await processor(createMockMessageJob());
@@ -1444,6 +1537,22 @@ describe("durable Zernio postback delivery", () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+});
+
+describe("DM Worker — button taps ignore the comment activation cutoff", () => {
+  it("still sends the reveal when the campaign's activation is in the future", async () => {
+    mockPrisma.automation.findFirst.mockResolvedValue({
+      ...mockAutomation,
+      activatedAt: new Date("2099-01-01T00:00:00.000Z"),
+      requireFollow: false,
+      trackedLinks: [],
+    });
+
+    await getProcessor()(createMockPostbackJob());
+
+    expect(mockSendDirectMessage).toHaveBeenCalled();
+    expect(mockSendPrivateReply).not.toHaveBeenCalled();
   });
 });
 
