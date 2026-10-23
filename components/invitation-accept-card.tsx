@@ -14,7 +14,7 @@ export default function InvitationAcceptCard({
   isSignedIn,
   invitedEmail,
 }: InvitationAcceptCardProps) {
-  const { t } = useI18n();
+  const { t, text } = useI18n();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -31,7 +31,7 @@ export default function InvitationAcceptCard({
       window.location.assign("/dashboard");
       return;
     }
-    setMessage(payload.error ?? t("Could not accept invitation"));
+    setMessage(text(payload.error ?? "") || t("Could not accept invitation"));
     setBusy(false);
   }
 

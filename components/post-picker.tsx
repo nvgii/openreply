@@ -44,7 +44,7 @@ export default function PostPicker({
   usedPostIds,
   onSelect,
 }: PostPickerProps) {
-  const { t } = useI18n();
+  const { t, text } = useI18n();
   const [limitations, setLimitations] = useState<string[]>([]);
   const [posts, setPosts] = useState<InstagramPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,11 +87,11 @@ export default function PostPicker({
           setLimitations(data.limitations ?? []);
           writeCache(cacheKey, data.data);
         } else if (!cached.data) {
-          setError(data.error ?? "Failed to load posts");
+          setError(text(data.error ?? "Failed to load posts"));
         }
       })
       .catch(() => {
-        if (!cancelled && !cached.data) setError("Failed to load posts");
+        if (!cancelled && !cached.data) setError(t("Failed to load posts"));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -100,7 +100,7 @@ export default function PostPicker({
     return () => {
       cancelled = true;
     };
-  }, [instagramAccountId]);
+  }, [instagramAccountId, t, text]);
 
   if (loading) {
     return (

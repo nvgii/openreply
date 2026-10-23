@@ -1,24 +1,27 @@
+import deCatalog from "./de.json";
 import ptBRCatalog from "./pt-BR.json";
 import zhTW from "./zh-TW.json";
 
 export const LOCALE_COOKIE = "openreply-locale";
-export type Locale = "en" | "zh-TW" | "pt-BR";
+export type Locale = "de" | "en" | "zh-TW" | "pt-BR";
 export type MessageKey = keyof typeof zhTW;
 
 // Every catalog must translate exactly the same English keys. `satisfies` makes
 // a missing key a compile error instead of an `undefined` at render time.
+const de = deCatalog satisfies Record<MessageKey, string>;
 const ptBR = ptBRCatalog satisfies Record<MessageKey, string>;
 const catalogs: Record<Exclude<Locale, "en">, Record<MessageKey, string>> = {
+  de,
   "zh-TW": zhTW,
   "pt-BR": ptBR,
 };
 
 export function isLocale(value: unknown): value is Locale {
-  return value === "en" || value === "zh-TW" || value === "pt-BR";
+  return value === "de" || value === "en" || value === "zh-TW" || value === "pt-BR";
 }
 
 export function resolveLocale(value: unknown): Locale {
-  return isLocale(value) ? value : "en";
+  return isLocale(value) ? value : "de";
 }
 
 type Placeholders<S extends string> =
@@ -72,6 +75,9 @@ export function createI18n(locale: Locale) {
   return {
     locale,
     t,
+    // API and validation errors stay English keys. Translate the ones we know.
+    text: (value: string) =>
+      Object.hasOwn(zhTW, value) ? t(value as StaticMessageKey) : value,
     label: (value: string) =>
       Object.hasOwn(labels, value) ? t(labels[value]) : value,
   };

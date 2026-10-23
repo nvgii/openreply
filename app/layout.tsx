@@ -52,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${montserrat.variable} h-full`}>
+    <html lang="de" className={`${montserrat.variable} h-full`}>
       <body
         className={`${montserrat.className} min-h-full bg-background text-foreground antialiased`}
         // Clears the home indicator when installed; 0 everywhere else.

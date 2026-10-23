@@ -79,7 +79,9 @@ export async function ensureWorkspaceForUser(
     return existingMembership.workspace;
   }
 
-  const workspaceName = email ? `${email.split("@")[0]}'s workspace` : "My workspace";
+  const workspaceName = email
+    ? `Arbeitsbereich von ${email.split("@")[0]}`
+    : "Mein Arbeitsbereich";
 
   return prisma.workspace.create({
     data: {

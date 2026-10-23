@@ -26,9 +26,16 @@ describe("language preference", () => {
     expect(t("Settings")).toBe("Configurações");
   });
 
-  it("falls back to English for an invalid cookie", async () => {
+  it("falls back to German for an invalid cookie", async () => {
     store.get.mockReturnValue({ value: "unsupported" });
-    expect((await getI18n()).locale).toBe("en");
+    expect((await getI18n()).locale).toBe("de");
+  });
+
+  it("renders German when no language cookie is set", async () => {
+    store.get.mockReturnValue(undefined);
+    const { locale, t } = await getI18n();
+    expect(locale).toBe("de");
+    expect(t("Inbox")).toBe("Posteingang");
   });
 
   it("persists only the language cookie, across routes and browser restarts", async () => {

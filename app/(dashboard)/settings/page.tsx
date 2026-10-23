@@ -51,7 +51,7 @@ interface WorkspaceMembersData {
 }
 
 export default function SettingsPage() {
-  const { t, label, locale } = useI18n();
+  const { t, text, label, locale } = useI18n();
   const showZernioPromo = useZernioPromo();
   const [data, setData] = useState<SettingsData | null>(null);
   const [membersData, setMembersData] = useState<WorkspaceMembersData | null>(
@@ -109,7 +109,7 @@ export default function SettingsPage() {
       setMembersData(payload.data);
       setInviteEmail("");
     } else {
-      setMemberError(payload.error ?? t("Could not invite member"));
+      setMemberError(text(payload.error ?? "") || t("Could not invite member"));
     }
     setBusy(null);
   }

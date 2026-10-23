@@ -36,7 +36,7 @@ const COUNT_OPTIONS = [
 ] as const;
 
 export default function OverviewPage() {
-  const { t, locale } = useI18n();
+  const { t, text, locale } = useI18n();
   const [data, setData] = useState<OverviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +57,12 @@ export default function OverviewPage() {
           setData(res.data);
           setError(null);
         } else {
-          setError(res.error ?? "Failed to load overview");
+          setError(text(res.error ?? "Failed to load overview"));
         }
       })
-      .catch(() => setError("Failed to load overview"))
+      .catch(() => setError(t("Failed to load overview")))
       .finally(() => setLoading(false));
-  }, [selectedAccountId, count]);
+  }, [selectedAccountId, count, t, text]);
 
   function handleAccountChange(accountId: string) {
     setLoading(true);

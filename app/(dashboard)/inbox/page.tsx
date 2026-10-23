@@ -38,7 +38,7 @@ function formatTime(iso: string | null, locale: Locale): string {
 }
 
 export default function InboxPage() {
-  const { t, locale } = useI18n();
+  const { t, text: translate, locale } = useI18n();
   const [accounts, setAccounts] = useState<AccountOption[]>([]);
   // Seed from the last-used account so a revisit can paint the cached
   // conversation list immediately, before the account list even loads.
@@ -108,16 +108,16 @@ export default function InboxPage() {
           writeCache(convCacheKey(selectedAccountId), data.data.conversations);
           setConvError(null);
         } else if (!silent) {
-          setConvError(data.error ?? "Failed to load conversations");
+          setConvError(translate(data.error ?? "Failed to load conversations"));
         }
       } catch {
-        if (!silent) setConvError("Failed to load conversations");
+        if (!silent) setConvError(t("Failed to load conversations"));
       } finally {
         conversationRequests.current.delete(selectedAccountId);
         if (!silent) setConvLoading(false);
       }
     },
-    [selectedAccountId]
+    [selectedAccountId, t, translate]
   );
 
   // Load + poll conversations for the selected account. A cached list is shown
@@ -244,7 +244,7 @@ export default function InboxPage() {
         // Roll the optimistic message back and restore the draft so it's not lost.
         setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
         setDraft(text);
-        setSendError(data.error ?? t("Failed to send message"));
+        setSendError(translate(data.error ?? "") || t("Failed to send message"));
       }
     } catch {
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
