@@ -70,9 +70,9 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-px bg-border lg:grid-cols-3 xl:grid-cols-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="panel rounded p-5 h-32">
+            <div key={i} className="h-32 bg-background p-5">
               <div className="w-10 h-10 rounded bg-surface-hover" />
               <div className="mt-4 h-6 w-16 bg-surface-hover rounded" />
               <div className="mt-2 h-4 w-24 bg-surface-hover/60 rounded" />
@@ -92,7 +92,7 @@ export default function DashboardPage() {
       {/* Greeting header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+          <h1 className="type-statement text-3xl text-foreground sm:text-4xl">
             {t("Hello, {name}!", { name: stats?.userName ?? t("there") })}
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -115,7 +115,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-px bg-border lg:grid-cols-3 xl:grid-cols-6">
         <StatCard
           label={t("Active Campaigns")}
           value={stats?.activeAutomations ?? 0}
@@ -128,9 +128,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Chart + Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 sm:gap-6">
+      <div className="grid gap-px bg-border lg:grid-cols-6">
         {/* 7-Day Chart */}
-        <div className="lg:col-span-3 panel rounded p-4 sm:p-6">
+        <div className="bg-background p-5 lg:col-span-3">
           <h2 className="text-sm font-semibold text-foreground mb-6">{t("DMs — Last 7 Days")}</h2>
           <div className="flex items-end gap-1.5 h-40 sm:gap-2">
             {stats?.dailyDMs.map((day) => (
@@ -154,7 +154,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Top Keywords */}
-        <div className="lg:col-span-1 panel rounded p-4 sm:p-6">
+        <div className="bg-background p-5 lg:col-span-1">
           <h2 className="text-sm font-semibold text-foreground mb-4">{t("Top Keywords")}</h2>
           <div className="space-y-3">
             {stats?.topKeywords.length === 0 && (
@@ -172,7 +172,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="lg:col-span-2 panel rounded p-4 sm:p-6">
+        <div className="bg-background p-5 lg:col-span-2">
           <h2 className="text-sm font-semibold text-foreground mb-4">{t("Recent Activity")}</h2>
           <div className="space-y-3 max-h-60 overflow-y-auto">
             {stats?.recentLogs.length === 0 && (

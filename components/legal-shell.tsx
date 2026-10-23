@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/wordmark";
 
 interface LegalShellProps {
   title: string;
@@ -16,30 +17,31 @@ export default function LegalShell({
   return (
     <main className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="text-lg font-bold text-foreground">OpenReply</span>
+        <div className="mx-auto flex h-20 max-w-5xl items-center justify-between px-[clamp(16px,2.8vw,44px)]">
+          <Link href="/" className="inline-flex" aria-label="nadworker">
+            <Wordmark height={22} />
           </Link>
           <Link
             href="/login"
-            className="text-sm font-semibold text-muted transition hover:text-foreground"
+            className="type-meta text-muted hover:text-foreground"
           >
             Sign in
           </Link>
         </div>
       </header>
 
-      <article className="mx-auto max-w-3xl px-5 py-14">
-        <p className="text-sm font-semibold uppercase text-accent">
+      <article className="mx-auto max-w-3xl px-[clamp(16px,2.8vw,44px)] py-16">
+        <p className="type-meta text-muted">
           Last updated {updatedAt}
         </p>
-        <h1 className="mt-4 text-4xl font-black text-foreground sm:text-5xl">
+        <h1 className="type-display mt-6 text-5xl text-foreground sm:text-6xl">
           {title}
         </h1>
-        <p className="mt-5 text-base leading-8 text-muted">{description}</p>
-        <div className="mt-10 space-y-8 text-sm leading-7 text-foreground">
+        <p className="type-body mt-6 text-muted">{description}</p>
+        <div className="mt-12 space-y-8 text-base leading-relaxed text-foreground">
           {children}
         </div>
+        <p className="type-meta mt-16 text-muted">Powered by OpenReply</p>
       </article>
     </main>
   );

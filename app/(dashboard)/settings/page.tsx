@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n/provider";
 import { Suspense, useEffect, useState } from "react";
 import type { AccountOption } from "@/components/account-select";
 import { ZernioConnection } from "@/components/zernio-connection";
+import { useZernioPromo } from "@/components/zernio-promo";
 import { InstagramConnectNotice } from "@/components/instagram-connect-notice";
 
 interface SettingsData {
@@ -51,6 +52,7 @@ interface WorkspaceMembersData {
 
 export default function SettingsPage() {
   const { t, label, locale } = useI18n();
+  const showZernioPromo = useZernioPromo();
   const [data, setData] = useState<SettingsData | null>(null);
   const [membersData, setMembersData] = useState<WorkspaceMembersData | null>(
     null
@@ -133,7 +135,7 @@ export default function SettingsPage() {
     membersData?.currentUserRole === "ADMIN";
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="mx-auto max-w-3xl space-y-10">
       {/* Surfaces the ?instagram= code the OAuth routes redirect back with.
           Needs a Suspense boundary: useSearchParams in a prerendered client
           page fails the production build without one. */}
@@ -142,15 +144,15 @@ export default function SettingsPage() {
       </Suspense>
 
       <section className="panel rounded p-4 sm:p-6 space-y-3">
-        <h2 className="text-base font-semibold">{t("Interface language")}</h2>
+        <h2 className="type-statement text-2xl">{t("Interface language")}</h2>
         <LanguageSwitcher />
         <p className="text-sm text-muted">{t("Saved in this browser. Campaign messages stay unchanged.")}</p>
       </section>
 
-      <ZernioConnection canManage={canManageMembers} />
+      {showZernioPromo && <ZernioConnection canManage={canManageMembers} />}
 
       <section className="panel rounded p-4 sm:p-6">
-        <h2 className="text-base font-semibold mb-6">{t("Instagram Connection")}</h2>
+        <h2 className="type-statement mb-6 text-2xl">{t("Instagram Connection")}</h2>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3 py-3 border-b border-border">
@@ -161,7 +163,7 @@ export default function SettingsPage() {
               </p>
             </div>
             <span
-              className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+              className={`border border-current px-3 py-1.5 text-xs font-semibold ${
                 accounts.length > 0
                   ? "bg-success/10 text-success"
                   : "bg-warning/10 text-warning"
@@ -223,7 +225,7 @@ export default function SettingsPage() {
         <div className="mt-6 pt-4 border-t border-border flex gap-3">
           <a
             href="/api/instagram/connect"
-            className="px-4 py-2 rounded text-sm font-medium transition-colors bg-accent text-white hover:bg-accent-hover"
+            className="nw-cta"
           >
             {t("Connect using your own Meta app")}
           </a>
@@ -231,7 +233,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="panel rounded p-4 sm:p-6">
-        <h2 className="text-base font-semibold mb-6">{t("Team")}</h2>
+        <h2 className="type-statement mb-6 text-2xl">{t("Team")}</h2>
         <div className="space-y-3">
           {membersData?.members.map((member) => (
             <div
@@ -244,7 +246,7 @@ export default function SettingsPage() {
                 </p>
                 <p className="text-xs text-muted">{member.user.email}</p>
               </div>
-              <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted">
+              <span className="border border-border px-3 py-1 text-xs font-semibold text-muted">
                 {label(member.role)}
               </span>
             </div>
@@ -321,7 +323,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={busy === "invite"}
-              className="rounded bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
+              className="bg-accent px-4 py-3 text-sm font-bold hover:bg-accent-hover disabled:opacity-50"
             >
               {busy === "invite" ? t("Inviting...") : t("Invite")}
             </button>
@@ -333,7 +335,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="panel rounded p-4 sm:p-6">
-        <h2 className="text-base font-semibold mb-6">{t("Usage")}</h2>
+        <h2 className="type-statement mb-6 text-2xl">{t("Usage")}</h2>
         <div className="flex items-center justify-between gap-3 py-3">
           <div>
             <p className="text-sm font-medium text-foreground">

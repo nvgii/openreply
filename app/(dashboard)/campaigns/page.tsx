@@ -420,30 +420,30 @@ export default function CampaignsPage() {
               <div className="min-w-[12rem] flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <h3 className="text-sm font-semibold truncate">{auto.name}</h3>
-                  <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-xs text-muted">
+                  <span className="shrink-0 border border-border px-2 py-0.5 text-xs text-muted">
                     @{auto.instagramAccount.username}
                   </span>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    className={`text-xs px-2 py-0.5 font-medium ${
                       auto.isActive
                         ? "bg-success/10 text-success"
-                        : "bg-zinc-500/10 text-muted"
+                        : "border border-border text-muted"
                     }`}
                   >
                     {auto.isActive ? t("Active") : t("Paused")}
                   </span>
                   {auto.pendingNextReel && (
-                    <span className="shrink-0 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-warning">
+                    <span className="shrink-0 border border-warning px-2 py-0.5 text-xs font-medium text-warning">
                       {t("Waiting for next reel")}
                     </span>
                   )}
                   {auto.requireFollow && (
-                    <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+                    <span className="shrink-0 bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
                       {t("Follow gate")}
                     </span>
                   )}
                   {auto.trackedLinks.length >= 2 && (
-                    <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+                    <span className="shrink-0 bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
                       {t("2 links")}
                     </span>
                   )}
@@ -513,7 +513,7 @@ export default function CampaignsPage() {
                 {auto.postUrl && (
                   <button
                     onClick={() => void copyReelUrl(auto)}
-                    className="shrink-0 rounded-full border border-border px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:border-border-hover hover:text-foreground"
+                    className="shrink-0 border border-border px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:border-border-hover hover:text-foreground"
                   >
                     {copiedId === auto.id ? t("Copied!") : t("Copy URL")}
                   </button>
@@ -522,13 +522,13 @@ export default function CampaignsPage() {
                 <button
                   onClick={() => toggleActive(auto.id, auto.isActive)}
                   className={`
-                    relative w-11 h-6 rounded-full transition-colors
-                    ${auto.isActive ? "bg-accent" : "bg-zinc-300"}
+                    relative h-6 w-11 border transition-colors
+                    ${auto.isActive ? "border-accent bg-accent" : "border-border bg-transparent"}
                   `}
                 >
                   <span
                     className={`
-                      absolute top-1 w-4 h-4 rounded-full bg-white transition-transform shadow-sm
+                      absolute top-1 h-4 w-4 bg-foreground transition-transform
                       ${auto.isActive ? "left-6" : "left-1"}
                     `}
                   />

@@ -562,15 +562,15 @@ export default function CampaignPreview(props: CampaignPreviewProps) {
         )}
       </Phone>
 
-      <div className="inline-flex rounded-full bg-surface p-1">
+      <div className="inline-flex border border-border">
         {tabs.map((t) => (
           <button
             key={t.key}
             type="button"
             onClick={() => onTabChange(t.key)}
-            className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
+            className={`px-4 py-2 text-sm font-semibold ${
               activeTab === t.key
-                ? "bg-background font-medium text-foreground ring-1 ring-accent/40"
+                ? "bg-accent text-foreground"
                 : "text-muted hover:text-foreground"
             }`}
           >

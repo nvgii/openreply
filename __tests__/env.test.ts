@@ -3,6 +3,7 @@ import {
   getEncryptionKeyHex,
   getMetaGraphApiVersion,
   isEmailAllowedToSignIn,
+  isZernioPromoEnabled,
   requireEnv,
 } from "../lib/env";
 
@@ -28,6 +29,21 @@ describe("environment helpers", () => {
     expect(getMetaGraphApiVersion()).toBe("v25.0");
     vi.stubEnv("META_GRAPH_API_VERSION", "v26.0");
     expect(getMetaGraphApiVersion()).toBe("v26.0");
+  });
+});
+
+describe("Zernio promo flag", () => {
+  it("stays hidden unless the flag is explicitly enabled", () => {
+    vi.stubEnv("ZERNIO_PROMO_ENABLED", "");
+    expect(isZernioPromoEnabled()).toBe(false);
+    vi.stubEnv("ZERNIO_PROMO_ENABLED", "false");
+    expect(isZernioPromoEnabled()).toBe(false);
+    vi.stubEnv("ZERNIO_PROMO_ENABLED", "true");
+    expect(isZernioPromoEnabled()).toBe(true);
+    vi.stubEnv("ZERNIO_PROMO_ENABLED", "1");
+    expect(isZernioPromoEnabled()).toBe(true);
+    vi.stubEnv("ZERNIO_PROMO_ENABLED", " YES ");
+    expect(isZernioPromoEnabled()).toBe(true);
   });
 });
 
