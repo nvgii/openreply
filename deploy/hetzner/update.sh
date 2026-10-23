@@ -2,11 +2,19 @@
 # Update an installed OpenReply server.
 #   bash /opt/openreply/deploy/hetzner/update.sh        git pull and rebuild
 #   bash /opt/openreply/deploy/hetzner/update.sh env    set Meta secrets, then recreate containers
+#
+# The no-argument path is what GitHub Actions runs, via a forced SSH command
+# with no TTY. It does not prompt. BRANCH defaults to main.
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/openreply}"
 BRANCH="${BRANCH:-main}"
 ENV_FILE="$APP_DIR/deploy/hetzner/.env"
+
+# Fail instead of waiting for a username, password, or host-key question.
+export GIT_TERMINAL_PROMPT=0
+export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new}"
+export GIT_PAGER=cat
 
 if [[ "$(id -u)" -ne 0 ]]; then
   echo "Bitte als root starten."
@@ -70,8 +78,15 @@ if [[ "${1:-}" == "env" ]]; then
   exit 0
 fi
 
+# No keyboard on this path. Drop stdin so git or docker cannot block on a prompt.
+if [[ ! -t 0 ]]; then
+  exec </dev/null
+fi
+
 git -C "$APP_DIR" fetch origin "$BRANCH"
-git -C "$APP_DIR" checkout -B "$BRANCH" "origin/$BRANCH"
+# Discard tracked edits so a dirty tree cannot stop the deploy. Ignored files,
+# including deploy/hetzner/.env, are left in place.
+git -C "$APP_DIR" checkout -f -B "$BRANCH" "origin/$BRANCH"
 
 cd "$APP_DIR/deploy/hetzner"
 # Recreate the app containers. Web runs `npm run db:migrate` (prisma migrate

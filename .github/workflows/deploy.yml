@@ -1,0 +1,49 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push waits. Cancelling a running deploy can stop it mid-migration.
+concurrency:
+  group: hetzner-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: none
+
+jobs:
+  deploy:
+    name: Deploy to Hetzner
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Open the deploy SSH session
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${DEPLOY_HOST}" || -z "${DEPLOY_SSH_KEY}" ]]; then
+            echo "Set repository secrets DEPLOY_HOST and DEPLOY_SSH_KEY."
+            exit 1
+          fi
+          install -d -m 700 "${HOME}/.ssh"
+          # OpenSSH rejects a private key that does not end with a newline.
+          printf '%s\n' "${DEPLOY_SSH_KEY}" | tr -d '\r' > "${HOME}/.ssh/deploy_key"
+          chmod 600 "${HOME}/.ssh/deploy_key"
+          ssh-keygen -y -f "${HOME}/.ssh/deploy_key" -P "" >/dev/null
+          # The server key is forced to:
+          #   command="bash /opt/openreply/deploy/hetzner/update.sh",no-pty
+          # so this remote command is ignored. -T does not request a TTY.
+          ssh -T \
+            -i "${HOME}/.ssh/deploy_key" \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=accept-new \
+            -o ConnectTimeout=20 \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=40 \
+            "root@${DEPLOY_HOST}" \
+            "bash /opt/openreply/deploy/hetzner/update.sh"
