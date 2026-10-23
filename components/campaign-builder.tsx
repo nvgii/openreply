@@ -95,11 +95,11 @@ function Radio({
       }`}
     >
       <span
-        className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border ${
-          checked ? "border-accent" : "border-zinc-500"
+        className={`grid h-4 w-4 shrink-0 place-items-center border ${
+          checked ? "border-accent bg-accent" : "border-border"
         }`}
       >
-        {checked && <span className="h-2 w-2 rounded-full bg-accent" />}
+        {checked && <span className="h-2 w-2 bg-foreground" />}
       </span>
       <span className="flex-1 text-foreground">{children}</span>
     </button>
@@ -117,12 +117,12 @@ function Toggle({
     <button
       type="button"
       onClick={onToggle}
-      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-        on ? "bg-accent" : "bg-zinc-300"
+      className={`relative h-6 w-11 shrink-0 border transition-colors ${
+        on ? "border-accent bg-accent" : "border-border bg-transparent"
       }`}
     >
       <span
-        className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${
+        className={`absolute top-1 h-4 w-4 bg-foreground transition-transform ${
           on ? "left-6" : "left-1"
         }`}
       />

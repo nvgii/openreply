@@ -1,5 +1,6 @@
 import { getI18n } from "@/lib/i18n/server";
 import Link from "next/link";
+import { Wordmark } from "@/components/wordmark";
 
 export async function generateMetadata() {
   const { t } = await getI18n();
@@ -12,21 +13,19 @@ export async function generateMetadata() {
 export default async function VerifyRequestPage() {
   const { t } = await getI18n();
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-foreground">
-            OpenReply
-          </h1>
+    <div className="flex min-h-screen items-center px-[clamp(16px,2.8vw,44px)] py-16">
+      <div className="grid w-full gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <Wordmark height={28} />
+          <p className="type-meta mt-10 text-muted">{t("Powered by OpenReply")}</p>
         </div>
-
-        <div className="panel rounded p-8 text-center">
-          <h2 className="text-lg font-semibold mb-2">{t("Check your email")}</h2>
-          <p className="text-sm text-muted">
+        <div className="border border-border p-8 lg:col-span-5 lg:col-start-8 lg:p-10">
+          <h1 className="type-statement text-3xl">{t("Check your email")}</h1>
+          <p className="type-body mt-4 text-muted">
             {t("We sent you a secure sign-in link. Open it on this device to continue.")}
           </p>
-          <p className="mt-6 text-sm">
-            <Link href="/login" className="text-accent hover:underline">
+          <p className="type-meta mt-8">
+            <Link href="/login" className="underline decoration-2 underline-offset-4">
               {t("Back to sign in")}
             </Link>
           </p>

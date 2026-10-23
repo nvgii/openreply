@@ -2,6 +2,7 @@ import { EMAIL_PROVIDER_ID, signIn } from "@/lib/auth";
 import { getI18n } from "@/lib/i18n/server";
 import { getCampaignTemplate } from "@/lib/templates/campaign-templates";
 import { DemoNotice } from "@/components/demo-notice";
+import { Wordmark } from "@/components/wordmark";
 import { isPublicDemoHost } from "@/lib/env";
 
 const GITHUB_URL = "https://github.com/diwenne/openreply";
@@ -27,25 +28,26 @@ export default async function LoginPage({
   const { t } = await getI18n();
   if (await isPublicDemoHost()) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="w-full max-w-md text-center">
-          <h1 className="text-2xl font-semibold text-foreground">
-            OpenReply
-          </h1>
-          <div className="panel rounded p-8 mt-8 shadow-black/40">
-            <h2 className="text-lg font-semibold text-foreground">
+      <div className="flex min-h-screen items-center px-[clamp(16px,2.8vw,44px)] py-16">
+        <div className="grid w-full items-end gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <Wordmark height={28} />
+            <p className="type-meta mt-10 text-muted">{t("Powered by OpenReply")}</p>
+          </div>
+          <div className="border border-border p-8 lg:col-span-5 lg:col-start-8 lg:p-10">
+            <h1 className="type-statement text-3xl text-foreground">
               {t("Sign-in is off on this demo")}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
+            </h1>
+            <p className="type-body mt-4 text-muted">
               {t("This is the public demo — it doesn’t create real accounts or send DMs. To use OpenReply for real, clone it and run your own instance with your own Meta app and domain.")}
             </p>
             <a
               href={SETUP_DOCS_URL}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded bg-accent px-6 py-3.5 text-sm font-semibold text-white shadow-indigo-500/25 transition-all hover:shadow-indigo-500/30"
+              className="nw-cta mt-8 w-full"
             >
-              {t("Clone it yourself")} <span aria-hidden="true">↗</span>
+              {t("Clone it yourself")} <span className="nw-arrow" aria-hidden="true">↗</span>
             </a>
           </div>
         </div>
@@ -70,25 +72,27 @@ export default async function LoginPage({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-foreground">
-            OpenReply
+    <div className="flex min-h-screen items-center px-[clamp(16px,2.8vw,44px)] py-16">
+      <div className="grid w-full items-end gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <h1>
+            <Wordmark height={32} />
           </h1>
-          <p className="text-muted text-sm leading-relaxed mt-2">
+          <p className="type-body mt-8 max-w-md text-muted">
             {selectedTemplate
               ? t("Sign in to use the {name} template.", { name: selectedTemplate.title })
               : t("Sign in by email, then connect your Instagram professional account.")}
           </p>
+          <p className="type-meta mt-10 text-muted">{t("Powered by OpenReply")}</p>
         </div>
 
+        <div className="lg:col-span-5 lg:col-start-8">
         <DemoNotice variant="panel" />
 
-        <div className="panel rounded p-8 shadow-black/40">
+        <div className="border border-border p-8 lg:p-10">
           {selectedTemplate && !checkEmail && (
-            <div className="mb-5 border border-accent/20 bg-accent/10 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+            <div className="mb-5 border-l-[3px] border-accent bg-transparent p-4">
+              <p className="type-meta text-foreground">
                 {t("Template selected")}
               </p>
               <p className="mt-2 text-sm font-semibold text-foreground">
@@ -120,18 +124,19 @@ export default async function LoginPage({
                   required
                   autoComplete="email"
                   placeholder="you@company.com"
-                  className="w-full px-4 py-3 rounded bg-surface border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-accent/40 focus:outline-none transition-colors"
+                  className="w-full border border-border bg-transparent px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-foreground focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 rounded bg-accent px-6 py-3.5 text-sm font-semibold text-white shadow-indigo-500/25 transition-all hover:shadow-indigo-500/30"
+                className="nw-cta w-full"
               >
-                {t("Email me a magic link")}
+                {t("Email me a magic link")} <span className="nw-arrow" aria-hidden="true">↗</span>
               </button>
             </form>
           )}
+        </div>
         </div>
       </div>
     </div>

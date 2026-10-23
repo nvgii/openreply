@@ -31,11 +31,12 @@ export interface FollowerChartPoint {
   delta: number | null;
 }
 
-// Colors read against the light chart surface (#ffffff): the accent line clears
-// 3:1 contrast and grid/axis text match the muted/border tokens. See globals.css.
-const SERIES_COLOR = "#f97316";
-const GRID_COLOR = "#e4e4e7";
-const AXIS_TEXT = "#71717a";
+// The series is ink so the line clears 3:1 on paper. Orange is only the
+// active dot, ringed in ink so the mark stays visible.
+const SERIES_COLOR = "#0D0D0D";
+const GRID_COLOR = "#D9D3C8";
+const AXIS_TEXT = "#4A463F";
+const DOT_FILL = "#F25C05";
 
 function formatCompact(n: number, locale: Locale): string {
   if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -208,7 +209,7 @@ export default function FollowerChart({
                 stroke={SERIES_COLOR}
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: SERIES_COLOR, stroke: "#ffffff", strokeWidth: 2 }}
+                activeDot={{ r: 4, fill: DOT_FILL, stroke: "#0D0D0D", strokeWidth: 2 }}
                 isAnimationActive={false}
               />
             </LineChart>

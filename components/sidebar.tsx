@@ -7,6 +7,8 @@
  */
 
 import LanguageSwitcher from "@/components/language-switcher";
+import { Mark } from "@/components/wordmark";
+import { useZernioPromo } from "@/components/zernio-promo";
 import { useI18n } from "@/lib/i18n/provider";
 import Link from "next/link";
 import Image from "next/image";
@@ -36,6 +38,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const { t } = useI18n();
   const pathname = usePathname();
+  const showZernioPromo = useZernioPromo();
 
   return (
     <>
@@ -49,24 +52,24 @@ export default function Sidebar({
 
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-dvh w-64 max-w-[85vw] shrink-0 bg-surface border-r border-border flex flex-col
+          chrome-dark fixed top-0 left-0 z-50 flex h-dvh w-64 max-w-[85vw] shrink-0 flex-col border-r border-border
           transition-transform duration-200 ease-out
-          lg:h-full lg:translate-x-0 lg:static lg:z-auto
+          lg:static lg:z-auto lg:h-full lg:translate-x-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Same reason as the top bar: the drawer is full height, so the
-            wordmark would otherwise land under the status bar. */}
+            mark would otherwise land under the status bar. */}
         <div
-          className="px-6 py-5 border-b border-border"
-          style={{ paddingTop: "calc(1.25rem + env(safe-area-inset-top))" }}
+          className="border-b border-border px-6 py-6"
+          style={{ paddingTop: "calc(1.5rem + env(safe-area-inset-top))" }}
         >
-          <Link href="/dashboard" className="text-base font-semibold">
-            OpenReply
+          <Link href="/dashboard" aria-label="nadworker" className="inline-flex">
+            <Mark size={40} label="" />
           </Link>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-6">
           {navItems.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(item.href + "/");
@@ -77,11 +80,11 @@ export default function Sidebar({
                 onClick={onClose}
                 aria-current={isActive ? "page" : undefined}
                 className={`
-                  block px-3 py-2.5 rounded text-sm
+                  block px-3 py-3 text-sm font-semibold
                   ${
                     isActive
-                      ? "bg-surface-hover text-foreground font-medium"
-                      : "text-muted hover:text-foreground hover:bg-surface-hover"
+                      ? "nav-current"
+                      : "text-muted hover:bg-surface-hover hover:text-foreground"
                   }
                 `}
               >
@@ -91,25 +94,28 @@ export default function Sidebar({
           })}
         </nav>
 
-        <div className="px-5 py-4 border-t border-border">
-          <div className="mb-4"><LanguageSwitcher /></div>
-          <p className="text-sm text-foreground truncate">{workspaceName}</p>
-          <p className="text-xs text-muted">{t("Self-hosted")}</p>
-          <a
-            href={zernioLink({ placement: "sidebar" })}
-            target="_blank"
-            rel="sponsored noopener noreferrer"
-            className="mt-4 flex items-center gap-3 text-xs text-muted hover:text-foreground"
-          >
-            <span>{t("Supported by")}</span>
-            <Image
-              src="/brand/zernio-primary.svg"
-              alt="Zernio"
-              width={64}
-              height={20}
-              className="m-2"
-            />
-          </a>
+        <div className="border-t border-border px-6 py-5">
+          <div className="mb-5"><LanguageSwitcher /></div>
+          <p className="truncate text-sm font-semibold text-foreground">{workspaceName}</p>
+          <p className="type-meta mt-1 text-muted">{t("Self-hosted")}</p>
+          <p className="type-meta mt-4 text-muted">{t("Powered by OpenReply")}</p>
+          {showZernioPromo && (
+            <a
+              href={zernioLink({ placement: "sidebar" })}
+              target="_blank"
+              rel="sponsored noopener noreferrer"
+              className="mt-4 flex items-center gap-3 text-xs text-muted hover:text-foreground"
+            >
+              <span>{t("Supported by")}</span>
+              <Image
+                src="/brand/zernio-primary.svg"
+                alt="Zernio"
+                width={64}
+                height={20}
+                className="m-2"
+              />
+            </a>
+          )}
         </div>
       </aside>
     </>

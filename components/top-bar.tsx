@@ -61,7 +61,7 @@ export default function TopBar({
         >
           {t("Menu")}
         </button>
-        <h1 className="truncate text-base font-semibold sm:text-lg">{t(title)}</h1>
+        <h1 className="type-statement truncate text-lg sm:text-xl">{t(title)}</h1>
       </div>
 
       {instagramAccountCount > 0 ? (
@@ -73,7 +73,7 @@ export default function TopBar({
       ) : (
         <a
           href="/api/instagram/connect"
-          className="shrink-0 whitespace-nowrap text-sm font-medium px-3 py-1.5 rounded bg-accent text-white hover:bg-accent-hover"
+          className="shrink-0 whitespace-nowrap bg-accent px-3 py-2 text-sm font-bold hover:bg-accent-hover"
         >
           {/* Full label needs more room than a 360px header has to spare. */}
           <span className="sm:hidden">{t("Connect")}</span>

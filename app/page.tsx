@@ -2,15 +2,10 @@ import type { Metadata } from "next";
 import "./landing.css";
 import Link from "next/link";
 import Image from "next/image";
-import localFont from "next/font/local";
 import { DemoNotice } from "@/components/demo-notice";
+import { Wordmark } from "@/components/wordmark";
+import { isZernioPromoEnabled } from "@/lib/env";
 import { zernioLink } from "@/lib/zernio-links";
-
-const geist = localFont({
-  src: "../public/fonts/geist-latin.woff2",
-  display: "swap",
-  weight: "100 900",
-});
 const GITHUB_URL = "https://github.com/diwenne/openreply";
 const SETUP_DOCS_URL = `${GITHUB_URL}/blob/main/docs/setup.md`;
 const ZERNIO_DOCS_URL = `${GITHUB_URL}/blob/main/docs/zernio.md`;
@@ -42,9 +37,9 @@ async function getGitHubStars(): Promise<number | null> {
 }
 
 export const metadata: Metadata = {
-  title: "OpenReply - Open source Instagram comment-to-DM automation",
+  title: "nadworker",
   description:
-    "A free, self-hosted ManyChat alternative. Turn Instagram keyword comments into automatic private replies. Connect through your own Meta app or optional paid provider Zernio.",
+    "Instagram comment-to-DM campaigns, powered by OpenReply. A free, self-hosted way to turn keyword comments into private replies.",
 };
 
 function SponsorCredit({ placement }: { placement: string }) {
@@ -75,7 +70,7 @@ function ReplyPreview() {
     >
       <div className="or-preview-top">
         <span className="or-wordmark">
-          OpenReply<span aria-hidden="true">↗</span>
+          <Wordmark height={16} />
         </span>
         <span className="or-mono">Campaign preview</span>
       </div>
@@ -107,7 +102,7 @@ function ReplyPreview() {
           <span className="or-avatar or-avatar-small">M</span>
           <div>
             <strong>maya.creates</strong>
-            <p>GUIDE! need this 😍</p>
+            <p>GUIDE. Need this.</p>
           </div>
         </div>
         <div className="or-match">
@@ -120,7 +115,7 @@ function ReplyPreview() {
         </div>
         <div className="or-message">
           <span className="or-mono">Sunday studio → Maya</span>
-          <p>Hey Maya! Here’s the link 👇</p>
+          <p>Hey Maya. Here is the link.</p>
           <span className="or-message-link">
             Shop the new drop <span aria-hidden="true">↗</span>
           </span>
@@ -172,17 +167,18 @@ const features = [
 
 export default async function Home() {
   const stars = await getGitHubStars();
+  const showZernioPromo = isZernioPromoEnabled();
   return (
-    <div id="top" className={`or-landing ${geist.className}`}>
+    <div id="top" className="or-landing">
       <a className="or-skip" href="#main">
         Skip to content
       </a>
       <DemoNotice variant="banner" />
       <header className="or-header">
         <div className="or-container or-nav">
-          <a className="or-wordmark" href="#top" aria-label="OpenReply home">
-            OpenReply
-          </a>
+          <Link className="or-wordmark" href="/" aria-label="nadworker home">
+            <Wordmark height={24} />
+          </Link>
           <nav aria-label="Main navigation">
             <a href="#how">How it works</a>
             <a href="#setup">Self-host it</a>
@@ -232,7 +228,7 @@ export default async function Home() {
             <p className="or-hero-note">
               Free software. Self-hosted. Your infrastructure.
             </p>
-            <SponsorCredit placement="landing-hero" />
+            {showZernioPromo && <SponsorCredit placement="landing-hero" />}
           </div>
           <ReplyPreview />
         </section>
@@ -461,8 +457,8 @@ export default async function Home() {
         <div className="or-container">
           <div className="or-footer-top">
             <div>
-              <Link href="/" className="or-wordmark">
-                OpenReply<span aria-hidden="true">↗</span>
+              <Link href="/" className="or-wordmark" aria-label="nadworker">
+                <Wordmark tone="paper" height={22} />
               </Link>
               <p>Open source Instagram comment-to-DM automation.</p>
             </div>
@@ -478,8 +474,10 @@ export default async function Home() {
             <span>
               MIT licensed · Built by{" "}
               <a href="https://diwenhuang.ca">Diwen Huang</a>
+              {" · "}
+              Powered by OpenReply
             </span>
-            <SponsorCredit placement="landing-footer" />
+            {showZernioPromo && <SponsorCredit placement="landing-footer" />}
           </div>
         </div>
       </footer>

@@ -1,14 +1,14 @@
 .or-landing {
-  --or-paper: #faf9f6;
-  --or-ink: #22221f;
-  --or-muted: #62625e;
-  --or-line: #deded7;
-  --or-orange: #c4490c;
-  --or-peach: #f6e6d8;
+  --or-paper: #f1eee8;
+  --or-ink: #0d0d0d;
+  --or-muted: #4a463f;
+  --or-line: color-mix(in srgb, #0d0d0d 18%, #f1eee8);
+  --or-orange: #f25c05;
   background: var(--or-paper);
   color: var(--or-ink);
+  font-family: inherit;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 .or-landing * {
   box-sizing: border-box;
@@ -27,11 +27,12 @@
   text-decoration: underline;
 }
 .or-landing :focus-visible {
-  outline: 2px solid var(--or-orange);
-  outline-offset: 4px;
+  outline: 2px solid var(--or-ink);
+  outline-offset: 3px;
 }
 .or-container {
-  width: min(100% - 64px, 1080px);
+  width: 100%;
+  padding-inline: clamp(16px, 2.8vw, 44px);
   margin-inline: auto;
 }
 .or-skip {
@@ -62,14 +63,14 @@
 .or-wordmark {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.045em;
+  text-decoration: none;
 }
-.or-wordmark > span {
-  color: var(--or-orange);
-  font-weight: 400;
+.or-wordmark img {
+  height: 24px;
+  width: auto;
+}
+.or-wordmark:hover {
+  text-decoration: none;
 }
 .or-nav nav {
   display: flex;
@@ -97,7 +98,7 @@
 }
 .or-nav-signin {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--or-muted);
   white-space: nowrap;
 }
@@ -113,24 +114,38 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 14px 20px;
-  border: 1px solid var(--or-line);
-  border-radius: 12px;
-  font-weight: 500;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding: 0 1.25rem;
+  border: 1px solid var(--or-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--or-ink);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
 }
 .or-button-small {
-  font-size: 14px;
-  padding: 10px 16px;
+  min-height: 44px;
+  font-size: 13px;
+  padding: 0 16px;
 }
 .or-button-primary {
-  background: var(--or-ink);
-  color: white;
-  border-color: var(--or-ink);
+  background: var(--or-orange);
+  color: var(--or-ink);
+  border-color: var(--or-orange);
 }
 .or-button-primary:hover {
-  background: #3c3c36;
+  background: color-mix(in srgb, #0d0d0d 12%, var(--or-orange));
   text-decoration: none !important;
+}
+.or-button .nw-arrow,
+.or-button span[aria-hidden] {
+  display: inline-block;
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.or-button:hover span[aria-hidden] {
+  transform: translateX(0.3rem);
 }
 .or-hero {
   display: grid;
@@ -140,21 +155,20 @@
   padding-block: 76px 60px;
 }
 .or-eyebrow {
-  font:
-    500 13px/1.5 Menlo,
-    Consolas,
-    monospace;
-  color: var(--or-orange);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  color: var(--or-ink);
   margin-bottom: 20px !important;
 }
-.or-hero h1 {
-  font-size: clamp(44px, 4.7vw, 60px);
-  line-height: 1.06;
-  font-weight: 600;
-  letter-spacing: -0.055em;
-}
-.or-hero h1 > span {
-  color: var(--or-orange);
+.or-hero h1,
+.or-closing h2 {
+  font-size: clamp(44px, 6vw, 84px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  text-transform: uppercase;
 }
 .or-lead {
   color: var(--or-muted);
@@ -171,7 +185,7 @@
   margin-top: 28px;
 }
 .or-text-link {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   display: inline-flex;
   align-items: center;
@@ -207,7 +221,7 @@
 }
 .or-preview {
   border: 1px solid var(--or-line);
-  border-radius: 16px;
+  border-radius: 0;
   background: white;
   min-width: 0;
 }
@@ -222,10 +236,10 @@
   font-size: 16px;
 }
 .or-mono {
-  font:
-    11px/1.6 Menlo,
-    Consolas,
-    monospace;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
   color: var(--or-muted);
 }
 .or-preview-body {
@@ -251,21 +265,21 @@
   display: grid;
   place-items: center;
   background: var(--or-ink);
-  color: white;
-  border-radius: 50%;
+  color: var(--or-paper);
+  border-radius: 0;
   font-size: 14px;
   flex-shrink: 0;
 }
 .or-active {
   margin-left: auto;
-  color: #166534;
+  color: var(--or-ink);
   font-size: 11px;
-  background: #f0fdf4;
-  padding: 3px 9px;
-  border-radius: 6px;
+  font-weight: 700;
+  background: var(--or-orange);
+  padding: 4px 8px;
 }
 .or-post {
-  background: var(--or-peach);
+  border: 1px solid var(--or-line);
   margin-top: 20px;
   padding: 24px;
   position: relative;
@@ -273,14 +287,14 @@
   min-height: 180px;
 }
 .or-post .or-mono {
-  color: var(--or-orange);
+  color: var(--or-ink);
   position: relative;
   z-index: 1;
 }
 .or-post p {
   margin-top: 16px;
   font-size: 28px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.04em;
   position: relative;
@@ -305,7 +319,7 @@
   position: absolute;
   inset: 0;
   border: 1px solid #d7af8f;
-  border-radius: 80px;
+  border-radius: 0;
 }
 .or-post-lines i:nth-child(2) {
   inset: 12px;
@@ -347,8 +361,8 @@
   margin-block: 20px;
 }
 .or-match code {
-  color: var(--or-orange);
-  font-weight: 600;
+  color: var(--or-ink);
+  font-weight: 700;
 }
 .or-match-line {
   height: 1px;
@@ -359,7 +373,7 @@
   margin-left: 36px;
   background: #f3f3ee;
   padding: 16px;
-  border-radius: 12px 12px 12px 0;
+  border-radius: 0;
   font-size: 13px;
 }
 .or-message p {
@@ -373,7 +387,7 @@
   border-top: 1px solid var(--or-line);
   padding-top: 12px;
   margin-top: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .or-delivered {
   display: flex;
@@ -394,7 +408,7 @@
   text-align: center;
   font-size: 10px;
   color: var(--or-muted);
-  border-radius: 0 0 16px 16px;
+  border-radius: 0;
 }
 .or-principles {
   display: flex;
@@ -403,16 +417,15 @@
   gap: 20px;
   padding-block: 24px;
   border-top: 1px solid var(--or-line);
-  font:
-    12px Menlo,
-    Consolas,
-    monospace;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
   color: var(--or-muted);
   margin-bottom: 60px;
 }
 .or-sheet {
   border: 1px solid var(--or-line);
-  border-radius: 24px;
+  border-radius: 0;
   overflow: clip;
 }
 .or-section {
@@ -423,10 +436,17 @@
   border-top: 1px solid var(--or-line);
 }
 .or-landing h2 {
-  font-size: 32px;
-  line-height: 1.18;
-  letter-spacing: -0.035em;
-  font-weight: 600;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+.or-closing h2 {
+  font-size: clamp(44px, 6vw, 84px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  text-transform: uppercase;
 }
 .or-landing h3 {
   font-size: 18px;
@@ -459,11 +479,10 @@
   gap: 20px;
 }
 .or-step-number {
-  font:
-    12px Menlo,
-    Consolas,
-    monospace;
-  color: var(--or-orange);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: var(--or-ink);
   padding-top: 4px;
 }
 .or-steps p {
@@ -492,7 +511,9 @@
 }
 .or-technical {
   background: var(--or-ink);
-  color: white;
+  color: var(--or-paper);
+  --or-muted: #c8c2b8;
+  --or-line: color-mix(in srgb, #f1eee8 22%, #0d0d0d);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 64px;
@@ -528,7 +549,7 @@
 }
 .or-runtime strong {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .or-runtime div > span:last-child {
   font-size: 12px;
@@ -598,7 +619,7 @@
 .or-faq summary {
   cursor: pointer;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   padding-right: 12px;
 }
 .or-faq details p {
@@ -624,8 +645,17 @@
   justify-content: center;
 }
 .or-footer {
-  border-top: 1px solid var(--or-line);
-  padding-block: 36px 20px;
+  background: var(--or-ink);
+  color: var(--or-paper);
+  --or-muted: #c8c2b8;
+  --or-line: color-mix(in srgb, #f1eee8 22%, #0d0d0d);
+  padding-block: 48px 28px;
+}
+.or-footer .or-wordmark img {
+  height: 22px;
+}
+.or-footer a {
+  color: var(--or-paper);
 }
 .or-footer-top {
   display: flex;
@@ -683,7 +713,7 @@
 }
 @media (max-width: 760px) {
   .or-container {
-    width: calc(100% - 48px);
+    padding-inline: 24px;
   }
   .or-nav {
     min-height: 72px;
@@ -788,12 +818,12 @@
     font-size: 26px;
   }
   .or-sheet {
-    border-radius: 16px;
+    border-radius: 0;
   }
 }
 @media (max-width: 380px) {
   .or-container {
-    width: calc(100% - 32px);
+    padding-inline: 16px;
   }
   .or-sponsor-disclosure {
     flex-basis: 100%;

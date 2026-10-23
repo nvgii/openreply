@@ -1,23 +1,68 @@
 @import "tailwindcss";
 
-/* ManyChat Alternative — Design System
-   Plain and functional. No gradients, glass, glow, or animation. */
+/*
+  nadworker — Brand Book Visual V1.
+  Three colours only: near-black #0D0D0D, orange #F25C05, off-white #F1EEE8.
+  Orange is punctuation (a CTA, an active mark, a status), never a wash
+  behind long text. Type on orange is near-black.
+  Sharp corners, 1px hairlines, no shadows, no second type family.
+  Success, error and warning are functional status colours, not brand
+  colours. They are darkened so they clear WCAG AA on the paper ground.
+*/
 
-@theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #18181b;
-  --color-surface: #f7f7f8;
-  --color-surface-hover: #efeff1;
-  --color-border: #e4e4e7;
-  --color-border-hover: #d4d4d8;
-  --color-muted: #71717a;
-  --color-accent: #f97316;
-  --color-accent-hover: #ea580c;
-  --color-success: #16a34a;
-  --color-error: #dc2626;
-  --color-warning: #d97706;
-  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+@theme {
+  --color-ink: #0d0d0d;
+  --color-paper: #f1eee8;
+  --color-orange: #f25c05;
+
+  --color-background: #f1eee8;
+  --color-foreground: #0d0d0d;
+  --color-surface: #f1eee8;
+  --color-surface-hover: color-mix(in srgb, #0d0d0d 6%, #f1eee8);
+  --color-border: color-mix(in srgb, #0d0d0d 18%, #f1eee8);
+  --color-border-hover: color-mix(in srgb, #0d0d0d 42%, #f1eee8);
+  --color-muted: #4a463f;
+  --color-accent: #f25c05;
+  --color-accent-hover: color-mix(in srgb, #0d0d0d 12%, #f25c05);
+  --color-inverse: #0d0d0d;
+  --color-inverse-foreground: #f1eee8;
+
+  --color-success: #0e6b34;
+  --color-error: #9f1d14;
+  --color-warning: #7a3e00;
+
+  --font-sans: var(--font-montserrat), sans-serif;
   --font-mono: ui-monospace, monospace;
+
+  /* Brand book loads 400, 600, 700 and 900 only. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 600;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 900;
+  --font-weight-black: 900;
+
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+
+  --shadow-2xs: 0 0 #0000;
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+
+  --color-zernio-coral: #eb3514;
+  --color-zernio-cream: #f0efeb;
+  --color-zernio-border: #d9d8d3;
+  --color-zernio-charcoal: #2d2d2d;
 }
 
 html {
@@ -28,25 +73,28 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.45;
 }
 
-/* Focus ring — visible, for keyboard users. */
+/* Focus is 2px with a 3px offset on controls. Near-black on paper clears
+   non-text contrast; orange on paper does not, so the ring stays ink. */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
 }
 
-/* Form fields already have a border, so keep the focus ring hugging the
-   field instead of bleeding up toward the label above it. */
+.chrome-dark :focus-visible {
+  outline-color: var(--color-paper);
+}
+
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline-offset: 1px;
 }
 
-/* iOS Safari zooms the whole page in when a focused field's text is under 16px,
-   and never zooms back out. Fields are text-sm (14px) throughout, so raise them
-   to 16px on phones and leave the desktop sizing alone. */
 @media (max-width: 640px) {
   input,
   textarea,
@@ -55,17 +103,104 @@ select:focus-visible {
   }
 }
 
-/* Panel — flat container. Replaces .glass / .glass-strong. */
+/* Dark app chrome. Tokens inherit, so sidebar controls stay on-brand. */
+.chrome-dark {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  --color-background: #0d0d0d;
+  --color-foreground: #f1eee8;
+  --color-surface: #0d0d0d;
+  --color-surface-hover: color-mix(in srgb, #f1eee8 10%, #0d0d0d);
+  --color-border: color-mix(in srgb, #f1eee8 22%, #0d0d0d);
+  --color-border-hover: color-mix(in srgb, #f1eee8 42%, #0d0d0d);
+  --color-muted: #c8c2b8;
+}
+
+.nav-current {
+  box-shadow: inset 3px 0 0 var(--color-orange);
+  color: var(--color-paper);
+}
+
+.type-display {
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.type-statement {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+.type-body {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.type-meta {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+.nw-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding: 0 1.25rem;
+  border: 1px solid var(--color-orange);
+  background: var(--color-orange);
+  color: var(--color-ink);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.nw-cta:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+.nw-arrow {
+  display: inline-block;
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+.nw-cta:hover .nw-arrow,
+.or-button:hover .nw-arrow {
+  transform: translateX(0.3rem);
+}
+
+/* Type on orange is near-black, including buttons that still say text-white. */
+.bg-accent,
+.bg-accent-hover,
+.zernio-action {
+  color: var(--color-ink);
+}
+
+/* Orange as small type fails AA on paper. Keep the word in ink. */
+.text-accent {
+  color: var(--color-foreground);
+}
+
+.chrome-dark .text-accent {
+  color: var(--color-orange);
+}
+
 .panel {
-  background: var(--color-surface);
+  background: transparent;
   border: 1px solid var(--color-border);
 }
 
-/* Kept as no-op aliases so existing markup degrades to plain surfaces
-   instead of breaking. Prefer .panel in new code. */
 .glass,
 .glass-strong {
-  background: var(--color-surface);
+  background: transparent;
   border: 1px solid var(--color-border);
 }
 
@@ -89,20 +224,22 @@ select:focus-visible {
   }
 }
 
-@theme inline {
-  --color-zernio-coral: #EB3514;
-  --color-zernio-cream: #F0EFEB;
-  --color-zernio-border: #D9D8D3;
-  --color-zernio-charcoal: #2D2D2D;
+.zernio-sponsor {
+  background: var(--color-zernio-cream);
+  color: var(--color-zernio-charcoal);
+  border-color: var(--color-zernio-border);
+  font-family: "Zernio Geist", sans-serif;
 }
-.zernio-sponsor { background: var(--color-zernio-cream); color: var(--color-zernio-charcoal); border-color: var(--color-zernio-border); }
-.zernio-action { background: var(--color-zernio-coral); color: white; }
+
+.zernio-action {
+  background: var(--color-zernio-coral);
+  color: white;
+}
 
 @font-face {
-  font-family: 'Zernio Geist';
-  src: url('/fonts/geist-latin.woff2') format('woff2');
+  font-family: "Zernio Geist";
+  src: url("/fonts/geist-latin.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
-.zernio-sponsor { font-family: 'Zernio Geist', sans-serif; }

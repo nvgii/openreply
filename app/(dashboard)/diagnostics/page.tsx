@@ -182,7 +182,7 @@ export default function DiagnosticsPage() {
                   <p className="min-w-0 flex-1 break-words text-sm font-semibold text-foreground">
                     {alert.message}
                   </p>
-                  <span className="shrink-0 rounded-full bg-error/10 px-2 py-1 text-xs font-semibold text-error">
+                  <span className="shrink-0 bg-error/10 px-2 py-1 text-xs font-semibold text-error">
                     {alert.level}
                   </span>
                 </div>

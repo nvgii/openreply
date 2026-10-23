@@ -3,6 +3,7 @@ import { getI18n } from "@/lib/i18n/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import InvitationAcceptCard from "@/components/invitation-accept-card";
+import { Wordmark } from "@/components/wordmark";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/client";
 
@@ -40,17 +41,17 @@ export default async function InvitePage({ params }: InvitePageProps) {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-5 py-12">
-        <Link href="/" className="mb-8 text-sm font-bold text-cyan-100">
-          OpenReply
+        <Link href="/" className="mb-10 inline-flex" aria-label="nadworker">
+          <Wordmark height={24} />
         </Link>
-        <section className="border border-white/10 bg-white/[0.035] p-8">
-          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-100">
+        <section className="border border-border p-8">
+          <p className="type-meta text-muted">
             {t("Workspace invitation")}
           </p>
-          <h1 className="mt-4 text-3xl font-black leading-tight text-white">
+          <h1 className="type-display mt-4 text-4xl text-foreground">
             {t("Join {workspace}", { workspace: invitation.workspace.name })}
           </h1>
-          <p className="mt-4 text-sm leading-6 text-zinc-400">
+          <p className="type-body mt-4 text-muted">
             {t("You were invited as {role} for {email}.", { role: label(invitation.role), email: invitation.email })}
           </p>
           <div className="mt-8">

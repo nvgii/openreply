@@ -83,6 +83,16 @@ export async function isPublicDemoHost(): Promise<boolean> {
  * list of addresses. Left unset, sign-in behaves exactly as before, so an
  * existing deployment is unaffected.
  */
+/**
+ * Sponsor promo for Zernio (Settings block and the sidebar credit).
+ * Hidden unless ZERNIO_PROMO_ENABLED is true, 1, yes, or on. The connection
+ * code stays in the app; this only decides whether the promo is shown.
+ */
+export function isZernioPromoEnabled(): boolean {
+  const value = (process.env.ZERNIO_PROMO_ENABLED ?? "").trim().toLowerCase();
+  return value === "1" || value === "true" || value === "yes" || value === "on";
+}
+
 export function isEmailAllowedToSignIn(
   email: string | null | undefined
 ): boolean {

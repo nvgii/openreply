@@ -2,8 +2,10 @@ import { I18nProvider } from "@/lib/i18n/provider";
 import { getI18n } from "@/lib/i18n/server";
 import { redirect } from "next/navigation";
 import DashboardShell from "@/components/dashboard-shell";
+import { ZernioPromoProvider } from "@/components/zernio-promo";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/client";
+import { isZernioPromoEnabled } from "@/lib/env";
 import { ensureWorkspaceForUser } from "@/lib/workspace";
 
 export async function generateMetadata() {
@@ -35,6 +37,7 @@ export default async function DashboardLayout({
 
   return (
     <I18nProvider locale={locale}>
+      <ZernioPromoProvider enabled={isZernioPromoEnabled()}>
       <DashboardShell
         workspaceName={workspace.name}
         instagramUsername={accounts[0]?.username ?? null}
@@ -42,6 +45,7 @@ export default async function DashboardLayout({
       >
         {children}
       </DashboardShell>
+      </ZernioPromoProvider>
     </I18nProvider>
   );
 }
