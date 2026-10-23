@@ -17,7 +17,14 @@ export function proxy(request: NextRequest) {
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
   const isLogin = pathname === "/login";
+  const isHome = pathname === "/";
   const isAuthenticated = hasSessionCookie(request);
+
+  if (isHome) {
+    return NextResponse.redirect(
+      new URL(isAuthenticated ? "/dashboard" : "/login", request.url)
+    );
+  }
 
   if (isProtected && !isAuthenticated) {
     const loginUrl = new URL("/login", request.url);
@@ -39,5 +46,6 @@ export const config = {
     "/logs/:path*",
     "/settings/:path*",
     "/login",
+    "/",
   ],
 };

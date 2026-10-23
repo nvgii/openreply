@@ -2,21 +2,19 @@ import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
 
 interface PublicSiteHeaderProps {
-  active?: "home" | "templates";
+  active?: "templates";
 }
 
 const navLinks = [
   { label: "Templates", href: "/templates", key: "templates" },
   { label: "Agencies", href: "/instagram-dm-automation-agencies", key: "agencies" },
-  { label: "Pricing", href: "/#pricing", key: "pricing" },
-  { label: "Security", href: "/#security", key: "security" },
 ];
 
 export default function PublicSiteHeader({ active }: PublicSiteHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-20 w-full items-center justify-between px-[clamp(16px,2.8vw,44px)]">
-        <Link href="/" className="inline-flex" aria-label="nadworker home">
+        <Link href="/login" className="inline-flex" aria-label="nadworker">
           <Wordmark height={22} />
         </Link>
 
