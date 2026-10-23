@@ -88,7 +88,7 @@ Wenn der A-Eintrag noch nicht geht, nimm als Domain im Skript die Server-IP mit 
 In der Web-Konsole als root diese **eine** Zeile einfügen und Enter drücken:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nvgii/openreply/cursor/railway-deploy-1204/deploy/hetzner/install.sh -o /tmp/openreply-install.sh && bash /tmp/openreply-install.sh
+curl -fsSL https://raw.githubusercontent.com/nvgii/openreply/main/deploy/hetzner/install.sh -o /tmp/openreply-install.sh && bash /tmp/openreply-install.sh
 ```
 
 Nicht `curl ... | bash` verwenden. Dann kann das Skript keine Fragen stellen.
@@ -282,7 +282,7 @@ Neue Programmversion, als root:
 bash /opt/openreply/deploy/hetzner/update.sh
 ```
 
-Das holt den Branch `cursor/railway-deploy-1204` und baut die Container neu. Beim Start spielt die Webseite neue Datenbank-Änderungen ein. Der Dienst, der die DMs schickt, wartet darauf. Die `.env` und die gespeicherten Daten bleiben. Änderungen, die du von Hand in den Programmdateien auf dem Server gemacht hast, werden überschrieben.
+Das holt den Branch `main` und baut die Container neu. Beim Start spielt die Webseite neue Datenbank-Änderungen ein. Der Dienst, der die DMs schickt, wartet darauf. Die `.env` und die gespeicherten Daten bleiben. Änderungen, die du von Hand in den Programmdateien auf dem Server gemacht hast, werden überschrieben.
 
 Kampagnen, die schon laufen, merken sich beim Update den aktuellen Zeitpunkt. Kommentare von davor werden nicht nachgeholt.
 

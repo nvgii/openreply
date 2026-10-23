@@ -5,7 +5,7 @@
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/nvgii/openreply.git}"
-BRANCH="${BRANCH:-cursor/railway-deploy-1204}"
+BRANCH="${BRANCH:-main}"
 APP_DIR="${APP_DIR:-/opt/openreply}"
 ENV_FILE="$APP_DIR/deploy/hetzner/.env"
 

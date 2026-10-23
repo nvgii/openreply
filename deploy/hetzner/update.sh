@@ -5,7 +5,7 @@
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/openreply}"
-BRANCH="${BRANCH:-cursor/railway-deploy-1204}"
+BRANCH="${BRANCH:-main}"
 ENV_FILE="$APP_DIR/deploy/hetzner/.env"
 
 if [[ "$(id -u)" -ne 0 ]]; then
