@@ -114,7 +114,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
               </p>
               {report.branded && (
                 <Link
-                  href="/"
+                  href="/login"
                   className="mt-4 inline-flex items-center justify-center border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground transition hover:border-foreground"
                 >
                   {t("Powered by OpenReply")}

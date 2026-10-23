@@ -41,7 +41,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-5 py-12">
-        <Link href="/" className="mb-10 inline-flex" aria-label="nadworker">
+        <Link href="/login" className="mb-10 inline-flex" aria-label="nadworker">
           <Wordmark height={24} />
         </Link>
         <section className="border border-border p-8">

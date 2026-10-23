@@ -18,7 +18,7 @@ export default function LegalShell({
     <main className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
         <div className="mx-auto flex h-20 max-w-5xl items-center justify-between px-[clamp(16px,2.8vw,44px)]">
-          <Link href="/" className="inline-flex" aria-label="nadworker">
+          <Link href="/login" className="inline-flex" aria-label="nadworker">
             <Wordmark height={22} />
           </Link>
           <Link

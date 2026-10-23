@@ -8,8 +8,8 @@ const DISMISS_KEY = "openreply:demo-notice-dismissed";
 const SETUP_DOCS_URL =
   "https://github.com/diwenne/openreply/blob/main/docs/setup.md";
 
-/// Module-level so both variants agree, and so dismissing survives a
-/// client-side navigation between the landing page and the login page.
+/// Module-level so both variants agree, and so dismissing survives
+/// client-side navigation.
 let dismissed: boolean | null = null;
 let listeners: Array<() => void> = [];
 
