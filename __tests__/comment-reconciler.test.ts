@@ -90,6 +90,7 @@ describe("comment polling does not recreate unsafe sends", () => {
         matchAnyWord: false,
         keywords: ["AI"],
         publicReplyEnabled: true,
+        activatedAt: new Date(Date.now() - 60 * 60 * 1000),
         instagramAccount: {
           id: "connection",
           instagramId: "owner",
@@ -135,4 +136,107 @@ describe("comment polling does not recreate unsafe sends", () => {
         expect(data.commentId).toBe("new");
     },
   );
+});
+
+describe("comment polling ignores comments from before the campaign was active", () => {
+  const activatedAt = new Date("2026-10-20T12:00:00.000Z");
+
+  function campaign() {
+    return {
+      id: "campaign",
+      name: "Campaign",
+      workspaceId: "workspace",
+      postId: POST,
+      matchAnyWord: false,
+      keywords: ["AI"],
+      publicReplyEnabled: false,
+      activatedAt,
+      instagramAccount: {
+        id: "connection",
+        instagramId: "owner",
+        provider: "META" as const,
+        accessToken: "test",
+      },
+    };
+  }
+
+  beforeEach(() => {
+    queueAdd.mockReset();
+    readComments.mockReset();
+    mockPrisma.operationalEvent.create.mockResolvedValue({});
+    mockPrisma.$queryRaw.mockResolvedValue([]);
+    mockPrisma.dmLog.findMany.mockResolvedValue([]);
+    mockPrisma.automation.findMany.mockResolvedValue([campaign()]);
+  });
+
+  it("skips a comment written before activation and enqueues one written after", async () => {
+    readComments.mockResolvedValue([
+      {
+        id: "before",
+        text: "AI",
+        from: { id: "reader" },
+        timestamp: "2026-10-20T11:59:59.000Z",
+      },
+      {
+        id: "at-start",
+        text: "AI",
+        from: { id: "reader-2" },
+        timestamp: activatedAt.toISOString(),
+      },
+      {
+        id: "after",
+        text: "AI",
+        from: { id: "reader-3" },
+        timestamp: "2026-10-21T00:00:00.000Z",
+      },
+    ]);
+
+    await reconcileComments();
+
+    expect(readComments).toHaveBeenCalledWith(
+      expect.objectContaining({ sinceMs: activatedAt.getTime() }),
+    );
+    const ids = queueAdd.mock.calls.map(([, data]) => data.commentId);
+    expect(ids).toEqual(["at-start", "after"]);
+    expect(queueAdd.mock.calls[0][1].commentCreatedAt).toBe(
+      activatedAt.toISOString(),
+    );
+  });
+
+  it("keeps the lookback when the campaign was activated earlier than that", async () => {
+    const oldActivation = new Date("2026-01-01T00:00:00.000Z");
+    mockPrisma.automation.findMany.mockResolvedValue([
+      { ...campaign(), activatedAt: oldActivation },
+    ]);
+    readComments.mockResolvedValue([
+      {
+        id: "recent",
+        text: "AI",
+        from: { id: "reader" },
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+
+    const before = Date.now();
+    await reconcileComments();
+
+    const sinceMs = readComments.mock.calls[0][0].sinceMs as number;
+    expect(sinceMs).toBeGreaterThan(oldActivation.getTime());
+    expect(sinceMs).toBeGreaterThanOrEqual(before - 72 * 60 * 60 * 1000);
+    expect(sinceMs).toBeLessThanOrEqual(Date.now() - 72 * 60 * 60 * 1000);
+    expect(queueAdd.mock.calls.map(([, data]) => data.commentId)).toEqual([
+      "recent",
+    ]);
+  });
+
+  it("still enqueues a comment the provider returned without a timestamp", async () => {
+    readComments.mockResolvedValue([
+      { id: "undated", text: "AI", from: { id: "reader" }, timestamp: "" },
+    ]);
+
+    await reconcileComments();
+
+    expect(queueAdd).toHaveBeenCalledTimes(1);
+    expect(queueAdd.mock.calls[0][1].commentCreatedAt).toBeUndefined();
+  });
 });

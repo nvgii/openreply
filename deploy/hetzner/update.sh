@@ -74,5 +74,12 @@ git -C "$APP_DIR" fetch origin "$BRANCH"
 git -C "$APP_DIR" checkout -B "$BRANCH" "origin/$BRANCH"
 
 cd "$APP_DIR/deploy/hetzner"
-docker compose --env-file .env up -d --build
-echo "Aktualisiert. Prüfe https://$(current_env DOMAIN)/api/health"
+# Recreate the app containers. Web runs `npm run db:migrate` (prisma migrate
+# deploy) before it listens. Worker and cron wait until that healthcheck
+# passes, so a new migration is applied before the comment poll runs again.
+# Postgres, Redis, and Caddy are started too, and recreated only when their
+# own config changed — their data volumes stay.
+docker compose --env-file .env up -d --build --force-recreate web worker cron
+docker compose --env-file .env up -d
+echo "Aktualisiert. Datenbank-Änderungen laufen beim Start der Webseite."
+echo "Prüfe https://$(current_env DOMAIN)/api/health"

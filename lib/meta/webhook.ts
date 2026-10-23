@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "crypto";
+import { commentCreatedAtIso } from "@/lib/automation/activation";
 
 export function verifyWebhookSignature(
   payload: string,
@@ -45,6 +46,11 @@ export interface WebhookCommentEvent {
    * matching has to consider it as well as mediaId.
    */
   originalMediaId?: string;
+  /**
+   * When the comment was created, if the payload says. Missing on some
+   * deliveries; those are still handled.
+   */
+  commentCreatedAt?: string;
 }
 
 interface WebhookEntry {
@@ -69,6 +75,10 @@ interface WebhookEntry {
         media_product_type?: string;
       };
       media_id?: string;
+      // The comment's own creation time, when the provider includes one.
+      // entry.time is only when the notification was sent.
+      timestamp?: string | number;
+      created_time?: string | number;
     };
   }>;
   messaging?: Array<{
@@ -146,6 +156,14 @@ export function parseCommentEvents(payload: WebhookPayload): WebhookCommentEvent
         continue;
       }
 
+      // Prefer the comment's own time. entry.time is the notification time,
+      // which on a Meta redelivery is still when the comment originally arrived.
+      // Zero or missing means we do not know, so the worker keeps handling it.
+      const commentCreatedAt =
+        commentCreatedAtIso(value?.created_time) ??
+        commentCreatedAtIso(value?.timestamp) ??
+        commentCreatedAtIso(entry.time);
+
       events.push({
         instagramAccountId: entry.id,
         commentId,
@@ -154,6 +172,7 @@ export function parseCommentEvents(payload: WebhookPayload): WebhookCommentEvent
         commenterName: value.from?.username,
         mediaId,
         originalMediaId,
+        ...(commentCreatedAt ? { commentCreatedAt } : {}),
       });
     }
   }

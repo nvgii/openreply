@@ -52,6 +52,7 @@ import {
 } from "@/lib/tracking/message";
 import { TRACKED_LINK_ORDER } from "@/lib/tracking/link-order";
 import { hashRecipientId } from "@/lib/tracking/server";
+import { commentPredatesActivation } from "@/lib/automation/activation";
 
 import { ZernioApiError } from "@/lib/zernio/client";
 
@@ -285,6 +286,7 @@ async function processComment(job: Job<ProcessCommentJob>): Promise<void> {
     commenterName,
     mediaId,
     originalMediaId,
+    commentCreatedAt,
   } = job.data;
   const requeueAttempt = job.data.requeueAttempt ?? 0;
 
@@ -321,6 +323,14 @@ async function processComment(job: Job<ProcessCommentJob>): Promise<void> {
   });
 
   for (const automation of automations) {
+    // Per campaign: a comment written before this one was switched on is left
+    // alone. Another campaign on the same post can still answer it. No
+    // timestamp means we cannot tell, so the comment is handled as before.
+    // Keyword DMs and button taps never reach this function.
+    if (commentPredatesActivation(commentCreatedAt, automation.activatedAt)) {
+      continue;
+    }
+
     // "Any word" campaigns fire on every comment; otherwise require a keyword hit.
     const matchResult = automation.matchAnyWord
       ? { matched: true, matchedKeyword: null }

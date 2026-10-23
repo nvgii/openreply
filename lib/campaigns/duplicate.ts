@@ -29,10 +29,12 @@ export function buildDuplicateName(name: string): string {
  * list never loads, and a field added to the model later is copied without
  * anyone having to remember this function.
  *
- * Four things are deliberately not carried over: the copy starts paused so it
+ * Five things are deliberately not carried over: the copy starts paused so it
  * cannot fire before it has been reviewed, it gets its own report share slug,
  * its tracked links get fresh slugs so click stats stay separate from the
- * original's, and the name gains a "copy" suffix.
+ * original's, the name gains a "copy" suffix, and its activation time is the
+ * moment of the copy. It is paused, so that time is replaced again when the
+ * copy is switched on.
  */
 export async function duplicateCampaign({
   automationId,
@@ -64,6 +66,7 @@ export async function duplicateCampaign({
       updatedAt: undefined,
       name: buildDuplicateName(settings.name),
       isActive: false,
+      activatedAt: new Date(),
       reportShareSlug: generateReportShareSlug(),
       trackedLinks: {
         // Numbered from the order just read, so the copy's buttons match

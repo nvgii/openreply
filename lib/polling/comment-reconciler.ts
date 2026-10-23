@@ -8,9 +8,13 @@
  *
  * This sweep is deliberately narrow. For each active campaign it looks only at
  * that campaign's post, only at recent comments, and acts on a comment ONLY when
- * both are true:
- *   1. the comment matches the campaign keyword, and
- *   2. the account owner has not already replied to it.
+ * all of these are true:
+ *   1. the comment was created after the campaign became active (created, or
+ *      last switched from paused to active) and inside the lookback window,
+ *   2. the comment matches the campaign keyword, and
+ *   3. the account owner has not already replied to it.
+ * Comments answered only by DM, including before this app was installed, are
+ * therefore left alone: a public reply is not required to skip them.
  * The reply check reads the comment's actual replies on Instagram, so a comment
  * you (or the tool) already answered is skipped — the poll never re-touches
  * handled comments. Each sweep is capped so it can never flood the comment API
@@ -40,6 +44,10 @@ import {
   type InstagramContext,
 } from "@/lib/instagram/provider";
 import { matchKeywords } from "@/lib/utils/keyword-matcher";
+import {
+  activationCutoffMs,
+  commentCreatedAtMs,
+} from "@/lib/automation/activation";
 
 // Only consider comments from the last few days — older ones are outside
 // Instagram's private-reply window anyway, so a DM to them would just fail.
@@ -79,6 +87,7 @@ export async function reconcileComments(): Promise<void> {
       keywords: true,
       wholeWordMatch: true,
       publicReplyEnabled: true,
+      activatedAt: true,
       workspaceId: true,
       instagramAccount: {
         select: {
@@ -130,6 +139,7 @@ async function sweepCampaign({
     keywords: string[];
     wholeWordMatch: boolean;
     publicReplyEnabled: boolean;
+    activatedAt: Date;
     instagramAccount: {
       id: string;
       instagramId: string;
@@ -190,6 +200,10 @@ async function sweepCampaign({
   if (mediaIds.length === 0) return stat;
 
   const queue = getDMQueue();
+  // Older of the two clocks wins: the lookback, and when this campaign was
+  // switched on. A comment from before activation was already handled outside
+  // this campaign, even when it is still inside the lookback.
+  const cutoffMs = activationCutoffMs(sinceMs, automation.activatedAt);
 
   for (const mediaId of mediaIds) {
     let comments: InstagramComment[];
@@ -197,7 +211,7 @@ async function sweepCampaign({
       comments = await getRecentMediaComments({
         context: accessToken,
         mediaId: mediaId,
-        sinceMs: sinceMs,
+        sinceMs: cutoffMs,
       });
     } catch (error) {
       stat.errors.push(`Comments ${mediaId}: ${errMessage(error)}`);
@@ -209,6 +223,11 @@ async function sweepCampaign({
     const needsAction = comments.filter((c) => {
       const authorId = c.from?.id;
       if (!authorId || authorId === account.instagramId) return false;
+
+      // No timestamp: the provider already applied cutoffMs, and a missing
+      // time is not "earlier", so the comment is still eligible.
+      const createdMs = commentCreatedAtMs(c.timestamp);
+      if (createdMs !== null && createdMs < cutoffMs) return false;
 
       const matched = automation.matchAnyWord
         ? true
@@ -277,6 +296,7 @@ async function sweepCampaign({
         commenterId: c.from!.id,
         commenterName: c.from?.username,
         mediaId,
+        commentCreatedAt: c.timestamp || undefined,
         // When the sweep is looking at an ad, the campaign is bound to the post
         // the ad was made from: without this the worker matches nothing and
         // drops the comment, so the sweep would enqueue it again every five

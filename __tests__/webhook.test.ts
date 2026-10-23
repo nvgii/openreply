@@ -96,7 +96,88 @@ describe("parseCommentEvents", () => {
       commenterId: "user_789",
       commenterName: "testuser",
       mediaId: "media_101",
+      commentCreatedAt: "2009-02-13T23:31:30.000Z",
     });
+  });
+
+  it("uses a millisecond entry time as the comment time", () => {
+    const payload = {
+      object: "instagram",
+      entry: [
+        {
+          id: "page_123",
+          time: 1_700_000_000_000,
+          changes: [
+            {
+              field: "comments",
+              value: {
+                id: "comment_456",
+                text: "LINK",
+                from: { id: "user_789", username: "testuser" },
+                media: { id: "media_101" },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(parseCommentEvents(payload)[0].commentCreatedAt).toBe(
+      "2023-11-14T22:13:20.000Z"
+    );
+  });
+
+  it("prefers the comment's own created_time over the notification time", () => {
+    const payload = {
+      object: "instagram",
+      entry: [
+        {
+          id: "page_123",
+          time: 1_700_000_000_000,
+          changes: [
+            {
+              field: "comments",
+              value: {
+                id: "comment_456",
+                text: "LINK",
+                from: { id: "user_789", username: "testuser" },
+                media: { id: "media_101" },
+                created_time: "2026-10-01T00:00:00.000Z",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(parseCommentEvents(payload)[0].commentCreatedAt).toBe(
+      "2026-10-01T00:00:00.000Z"
+    );
+  });
+
+  it("leaves the comment time unset when the payload has none", () => {
+    const payload = {
+      object: "instagram",
+      entry: [
+        {
+          id: "page_123",
+          time: 0,
+          changes: [
+            {
+              field: "comments",
+              value: {
+                id: "comment_456",
+                text: "LINK",
+                from: { id: "user_789", username: "testuser" },
+                media: { id: "media_101" },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(parseCommentEvents(payload)[0].commentCreatedAt).toBeUndefined();
   });
 
   it("keeps the organic post id of a comment left on an ad", () => {

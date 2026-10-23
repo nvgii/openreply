@@ -17,7 +17,7 @@ Für dieses Konto gilt:
 | Teil | Was es tut | Von außen erreichbar? |
 | --- | --- | --- |
 | Caddy | Holt das HTTPS-Zertifikat und leitet Besucher an die Webseite | Ja, Port 80 und 443 |
-| `web` | Seite, Login, Instagram-Rückweg, Webhook. Legt beim Start die Datenbank-Tabellen an | Nur intern |
+| `web` | Seite, Login, Instagram-Rückweg, Webhook. Legt beim Start die Datenbank an und spielt spätere Änderungen ein | Nur intern |
 | `worker` | Schickt die DMs | Nur intern |
 | `cron` | Erneuert das Instagram-Login jeden Tag um 05:00 UTC und speichert die Follower-Zahl. Alle 5 Minuten hängt es Kampagnen an ein neues Reel | Nur intern |
 | Postgres | Kampagnen, Konten, Logs | Nur intern |
@@ -270,6 +270,8 @@ Kampagne:
 9. Mit einem **anderen** Instagram-Konto `TEST` unter den Beitrag schreiben.
 10. Unter **DM Logs** steht **SENT**, und die DM kommt an.
 
+OpenReply beantwortet nur Kommentare, die geschrieben wurden, **nachdem die Kampagne gestartet ist**. Der Start ist das Anlegen oder das Wieder-Einschalten nach einer Pause. Kommentare von davor bleiben liegen. Das gilt auch für Kommentare, die ManyChat oder du schon per DM beantwortet hast: die bekommen keine zweite DM.
+
 Kommt nichts: **DM Logs** und `/api/health` prüfen. Die Meta-App muss Live sein, und `comments` muss abonniert sein. War das Konto bei ManyChat oder einem anderen DM-Tool, in der Meta Business Suite unter **Settings → Integrations → Conversation routing** das alte Tool entfernen und bei deiner App **Access all conversations** und **Take control of conversations** einschalten. Für den Test ohne Button brauchst du das erst, wenn später Buttons nichts tun und der Log „not the thread owner“ sagt.
 
 ## 8. Später aktualisieren
@@ -280,7 +282,9 @@ Neue Programmversion, als root:
 bash /opt/openreply/deploy/hetzner/update.sh
 ```
 
-Das holt den Branch `cursor/railway-deploy-1204` und baut die Container neu. Die `.env` und die Datenbank bleiben. Änderungen, die du von Hand in den Programmdateien auf dem Server gemacht hast, werden überschrieben.
+Das holt den Branch `cursor/railway-deploy-1204` und baut die Container neu. Beim Start spielt die Webseite neue Datenbank-Änderungen ein. Der Dienst, der die DMs schickt, wartet darauf. Die `.env` und die gespeicherten Daten bleiben. Änderungen, die du von Hand in den Programmdateien auf dem Server gemacht hast, werden überschrieben.
+
+Kampagnen, die schon laufen, merken sich beim Update den aktuellen Zeitpunkt. Kommentare von davor werden nicht nachgeholt.
 
 Meta-Werte nachtragen oder ersetzen:
 

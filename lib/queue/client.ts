@@ -33,6 +33,10 @@ export interface ProcessCommentJob {
   // Set when the comment came from an ad: the organic post the ad was made
   // from. Campaigns are bound to that post, so both ids have to be matched.
   originalMediaId?: string;
+  // When the comment was created, if the webhook or the poll knew. The worker
+  // ignores the comment when this is earlier than the campaign's activatedAt.
+  // Absent means the old behaviour: the comment is still handled.
+  commentCreatedAt?: string;
   requeueAttempt?: number;
   // Which path enqueued this comment. It is not copied to ProcessedComment or
   // used for reconciliation dedup.

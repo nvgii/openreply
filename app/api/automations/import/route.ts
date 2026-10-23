@@ -99,6 +99,7 @@ export async function POST(request: NextRequest) {
         publicReplyEnabled: Boolean(publicReply),
         publicReplyMessage: publicReply ? publicReply.slice(0, 1000) : null,
         isActive: campaign.isActive,
+        activatedAt: new Date(),
         wholeWordMatch: campaign.wholeWordMatch,
         workspaceId: context.workspaceId,
         instagramAccountId: account.id,
