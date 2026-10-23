@@ -131,7 +131,7 @@ function Toggle({
 }
 
 export default function CampaignBuilder({ mode, campaignId }: CampaignBuilderProps) {
-  const { t } = useI18n();
+  const { t, text } = useI18n();
   const router = useRouter();
 
   const [loading, setLoading] = useState(mode === "edit");
@@ -493,8 +493,8 @@ export default function CampaignBuilder({ mode, campaignId }: CampaignBuilderPro
         const firstField = fieldErrors && Object.keys(fieldErrors)[0];
         setError(
           firstField
-            ? `${firstField}: ${fieldErrors[firstField][0]}`
-            : data.error ?? t("Failed to save campaign")
+            ? `${firstField}: ${text(fieldErrors[firstField][0])}`
+            : text(data.error ?? "") || t("Failed to save campaign")
         );
         if (typeof window !== "undefined")
           window.scrollTo({ top: 0, behavior: "smooth" });

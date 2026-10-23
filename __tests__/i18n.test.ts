@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { createI18n, resolveLocale } from "../lib/i18n";
+import de from "../lib/i18n/de.json";
 import ptBR from "../lib/i18n/pt-BR.json";
 import zhTW from "../lib/i18n/zh-TW.json";
 
 describe("interface translations", () => {
-  it("keeps English as the default for absent or unsupported preferences", () => {
+  it("keeps German as the default for absent or unsupported preferences", () => {
     for (const value of [undefined, null, "", "fr", "zh-CN", "../zh-TW", "pt", "pt-PT"]) {
-      expect(resolveLocale(value)).toBe("en");
+      expect(resolveLocale(value)).toBe("de");
     }
+    expect(resolveLocale("de")).toBe("de");
+    expect(resolveLocale("en")).toBe("en");
     expect(resolveLocale("zh-TW")).toBe("zh-TW");
     expect(resolveLocale("pt-BR")).toBe("pt-BR");
   });
@@ -51,7 +54,7 @@ describe("interface translations", () => {
   it("has complete, plain-text translations with matching interpolation fields", () => {
     const placeholders = (text: string) =>
       [...text.matchAll(/\{(\w+)\}/g)].map((match) => match[1]).sort();
-    for (const catalog of [zhTW, ptBR]) {
+    for (const catalog of [de, zhTW, ptBR]) {
       for (const [source, translation] of Object.entries(catalog)) {
         expect(translation.trim(), source).not.toBe("");
         expect(placeholders(translation), source).toEqual(placeholders(source));
@@ -60,8 +63,21 @@ describe("interface translations", () => {
     }
   });
 
-  it("keeps the Brazilian Portuguese catalog on exactly the same keys", () => {
+  it("keeps every catalog on exactly the same keys", () => {
     expect(Object.keys(ptBR).sort()).toEqual(Object.keys(zhTW).sort());
+    expect(Object.keys(de).sort()).toEqual(Object.keys(zhTW).sort());
+  });
+
+  it("renders German informally and keeps the OpenReply credit", () => {
+    const { t, text } = createI18n("de");
+    expect(t("Campaigns")).toBe("Kampagnen");
+    expect(t("Settings")).toBe("Einstellungen");
+    expect(t("Hello, {name}!", { name: "Ada" })).toBe("Hallo Ada!");
+    expect(t("Powered by OpenReply")).toBe("Powered by OpenReply");
+    expect(t("{count} campaigns", { count: 0 })).toBe("0 Kampagnen");
+    expect(text("Campaign not found")).toBe("Kampagne nicht gefunden");
+    expect(text("not a known error")).toBe("not a known error");
+    expect(new Date("2026-10-23T12:00:00Z").toLocaleDateString("de")).toMatch(/23/);
   });
 
   it("renders Brazilian Portuguese with interpolation and display labels", () => {

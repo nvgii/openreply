@@ -64,7 +64,7 @@ interface Campaign {
 }
 
 export default function CampaignsPage() {
-  const { t, label } = useI18n();
+  const { t, label, locale } = useI18n();
   const router = useRouter();
   const [automations, setAutomations] = useState<Campaign[]>([]);
   const [accounts, setAccounts] = useState<AccountOption[]>([]);
@@ -462,7 +462,7 @@ export default function CampaignsPage() {
                 </div>
 
                 {/* DM preview */}
-                <p className="text-sm text-muted truncate">&ldquo;{auto.dmMessage}{t("”")}</p>
+                <p className="text-sm text-muted truncate">{locale === "de" ? "„" : "“"}{auto.dmMessage}{t("”")}</p>
 
                 {/* Tracked link sent */}
                 {auto.trackedLinks[0]?.trackedUrl && (

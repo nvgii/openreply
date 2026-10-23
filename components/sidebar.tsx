@@ -52,7 +52,7 @@ export default function Sidebar({
 
       <aside
         className={`
-          chrome-dark fixed top-0 left-0 z-50 flex h-dvh w-64 max-w-[85vw] shrink-0 flex-col border-r border-border
+          chrome-dark fixed top-0 left-0 z-50 flex h-dvh w-80 max-w-[85vw] shrink-0 flex-col overflow-x-hidden border-r border-border
           transition-transform duration-200 ease-out
           lg:static lg:z-auto lg:h-full lg:translate-x-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -61,7 +61,7 @@ export default function Sidebar({
         {/* Same reason as the top bar: the drawer is full height, so the
             mark would otherwise land under the status bar. */}
         <div
-          className="border-b border-border px-6 py-6"
+          className="min-w-0 border-b border-border px-6 py-6"
           style={{ paddingTop: "calc(1.5rem + env(safe-area-inset-top))" }}
         >
           <Link href="/dashboard" aria-label="nadworker" className="inline-flex">
@@ -69,7 +69,7 @@ export default function Sidebar({
           </Link>
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-6">
+        <nav className="min-w-0 flex-1 space-y-1 overflow-y-auto px-3 py-6">
           {navItems.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(item.href + "/");
@@ -80,7 +80,7 @@ export default function Sidebar({
                 onClick={onClose}
                 aria-current={isActive ? "page" : undefined}
                 className={`
-                  block px-3 py-3 text-sm font-semibold
+                  block min-w-0 truncate px-3 py-3 text-sm font-semibold
                   ${
                     isActive
                       ? "nav-current"
@@ -94,7 +94,7 @@ export default function Sidebar({
           })}
         </nav>
 
-        <div className="border-t border-border px-6 py-5">
+        <div className="min-w-0 border-t border-border px-6 py-5">
           <div className="mb-5"><LanguageSwitcher /></div>
           <p className="truncate text-sm font-semibold text-foreground">{workspaceName}</p>
           <p className="type-meta mt-1 text-muted">{t("Self-hosted")}</p>
