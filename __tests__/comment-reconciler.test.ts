@@ -139,7 +139,8 @@ describe("comment polling does not recreate unsafe sends", () => {
 });
 
 describe("comment polling ignores comments from before the campaign was active", () => {
-  const activatedAt = new Date("2026-10-20T12:00:00.000Z");
+  // Inside the 72-hour lookback, so the poll cutoff is the activation time.
+  const activatedAt = new Date(Date.now() - 60 * 60 * 1000);
 
   function campaign() {
     return {
@@ -175,7 +176,7 @@ describe("comment polling ignores comments from before the campaign was active",
         id: "before",
         text: "AI",
         from: { id: "reader" },
-        timestamp: "2026-10-20T11:59:59.000Z",
+        timestamp: new Date(activatedAt.getTime() - 1000).toISOString(),
       },
       {
         id: "at-start",
@@ -187,7 +188,7 @@ describe("comment polling ignores comments from before the campaign was active",
         id: "after",
         text: "AI",
         from: { id: "reader-3" },
-        timestamp: "2026-10-21T00:00:00.000Z",
+        timestamp: new Date(activatedAt.getTime() + 60 * 1000).toISOString(),
       },
     ]);
 
